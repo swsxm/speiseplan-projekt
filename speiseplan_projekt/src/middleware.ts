@@ -7,13 +7,13 @@ export async function middleware(request: NextRequest) {
 
   const verifiedToken =
       token &&
-      (await verifyAuth(token).catch((err: any) => {
+      (await verifyAuth(token).catch((err) => {
         console.log(err)
       }))
 
   // ADMIN PAGE FILTERING
 
-  if(request.nextUrl.pathname.startsWith('/admin')) {
+  if(request.nextUrl.pathname.startsWith('/Admin')) {
     if (verifiedToken && verifiedToken.admin === true){
       return
     }
@@ -27,11 +27,11 @@ export async function middleware(request: NextRequest) {
   if(request.nextUrl.pathname.startsWith('/login') && verifiedToken && verifiedToken.admin === true){
     return NextResponse.redirect(new URL('/admin', request.url))
   }
-  if(request.nextUrl.pathname.startsWith('/login')) {
+  if(request.nextUrl.pathname.startsWith('/login') && verifiedToken) {
     return NextResponse.redirect(new URL('/profile', request.url))
   }
   if(request.nextUrl.pathname.startsWith('/login') && !verifiedToken){
-    return NextResponse.redirect(new URL('/login', request.url));
+    return;
   }
 
   // REGISTER PAGE AUTHENTICATION
