@@ -1,113 +1,127 @@
-import Image from "next/image";
+import React from 'react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
-export default function Home() {
+import {
+  Salad,
+  CheckCircle,
+  Leaf,
+} from 'lucide-react'
+
+const perks = [
+  {
+    name: 'Gesund',
+    Icon: Salad,
+    description: 'Tauche ein in die Welt des Genusses mit köstlichem und gesundem Essen.',
+  },
+  {
+    name: 'Qualitativ',
+    Icon: CheckCircle,
+    description: 'Entdecke Produkte von höchster Qualität, die deinen Geschmackssinn verwöhnen.',
+  },
+  {
+    name: 'Nachhaltig',
+    Icon: Leaf,
+    description: 'Erlebe die Frische! Unsere Produkte stammen aus nachhaltigem Anbau und sind gut für dich und die Umwelt.',
+  },
+];
+
+
+const Home = () => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div>
+      <Navbar />
+      <div className='max-w-[1640px] mx-auto p-4'>
+        <div className='max-h-[500px] relative'>
+          {/* Overlay */}
+          <div className='absolute w-full h-full text-gray-200 max-h-[500px] bg-black/40 flex flex-col justify-center'>
+            <h1 className='px-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold'>
+              Discover. <span className='text-lime-500'>Order.</span>
+            </h1>
+            <h1 className='px-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold'>
+              {' '}
+              <span className='text-lime-500'>Taste.</span> Savor.
+            </h1>
+          </div>
+          <img
+            className='w-full max-h-[500px] object-cover'
+            src='https://images.pexels.com/photos/2741448/pexels-photo-2741448.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+            alt='/'
+          />
         </div>
       </div>
+      <section className='mt-4 max-w-[1640px] mx-auto p-4'>
+        
+      <div className='grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-0'>
+      {perks.map((perk) => (
+        <div
+          key={perk.name}
+          className='text-center md:flex md:items-start md:text-left lg:block lg:text-center'>
+          <div className='md:flex-shrink-0 flex justify-center'>
+            <div className='h-20 w-20 md:h-30 md:w-30 flex items-center justify-center rounded-full bg-green-100 text-green-900'>
+              {<perk.Icon className='' />}
+            </div>
+          </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+          <div className='mt-6 md:ml-4 md:mt-0 lg:ml-0 lg:mt-6'>
+            <h3 className='px-4 text-xl sm:text-2xl md:text-3xl lg:text-2xl xl:text-3xl font-bold'>
+              {perk.name}
+            </h3>
+            <p className='mt-3 text-sm md:text-base text-muted-foreground'>
+              {perk.description}
+            </p>
+          </div>
+        </div>
+      ))}
+</div>
+<h1 className='px-4 text-4xl sm:text-1xl md:text-3xl lg:text-5xl font-bold text-center mt-8'>Bestseller</h1>
+<div className='max-w-[1640px] mx-auto p-4 py-12 grid md:grid-cols-3 gap-6'>
+      {/* Card */}
+      <div className='rounded-xl relative'>
+        {/* Overlay */}
+        <div className='absolute w-full h-full bg-black/50 rounded-xl text-white'>
+          <p className='font-bold text-2xl px-2 pt-4'>Egg Toast</p>
+          <p className='px-2'>Leckers Spiegelei mit Toast</p>
+        </div>
+        <img
+        className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
+          src='https://images.unsplash.com/photo-1613769049987-b31b641f25b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjF8fGJyZWFrZmFzdHxlbnwwfDB8MHx8&auto=format&fit=crop&w=800&q=60'
+          alt='/'
         />
       </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      {/* Card */}
+      <div className='rounded-xl relative'>
+        {/* Overlay */}
+        <div className='absolute w-full h-full bg-black/50 rounded-xl text-white'>
+          <p className='font-bold text-2xl px-2 pt-4'>Rib King</p>
+          <p className='px-2'>Spare Ribs mit Pommes</p>
+        </div>
+        <img
+        className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
+          src='https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGJicXxlbnwwfDB8MHx8&auto=format&fit=crop&w=800&q=60'
+          alt='/'
+        />
       </div>
-    </main>
+      {/* Card */}
+      <div className='rounded-xl relative'>
+        {/* Overlay */}
+        <div className='absolute w-full h-full bg-black/50 rounded-xl text-white'>
+          <p className='font-bold text-2xl px-2 pt-4'>Schoko Traum</p>
+          <p className='px-2'>Erdbeeren mit Schoko Glassur</p>
+        </div>
+        <img
+        className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
+          src='https://images.unsplash.com/photo-1559715745-e1b33a271c8f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fGRlc3NlcnR8ZW58MHwwfDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60'
+          alt='/'
+        />
+      </div>
+    </div>   
+       
+      </section>
+      <Footer/>
+    </div>
+    
   );
-}
+};
+
+export default Home;
