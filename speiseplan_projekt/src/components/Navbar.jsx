@@ -37,10 +37,10 @@ export default function Navbar() {
         </div>
       </div>
       {/* Login button */}
-      <Link href={"/Login"}>
+      <Link href={"/login"}>
         <button className='bg-black text-white hidden md:flex items-center py-2 rounded-full'>
           <div className='flex items-center m-1'>
-            <FaUser className="w-5 h-5"/> {userName ? userName : 'Login'}
+            <FaUser className="w-5 h-5"/> {userName ? userName : 'login'}
           </div>
         </button>
       </Link>
