@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
 
   // ADMIN PAGE FILTERING
 
-  if(request.nextUrl.pathname.startsWith('/Admin')) {
+  if(request.nextUrl.pathname.startsWith('/admin')) {
     if (verifiedToken && verifiedToken.admin === true){
       return
     }
