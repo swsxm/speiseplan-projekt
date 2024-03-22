@@ -76,7 +76,7 @@ export default function Login() {
                 </div>
             )}
             <div className="flex justify-center">
-            <Link className="text-sm mt-4" href={"/Register"}>
+            <Link className="text-sm mt-4" href={"/register"}>
                Dont have an account? <span className="underline">Register</span>
             </Link>
             </div>
