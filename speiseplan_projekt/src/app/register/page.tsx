@@ -16,13 +16,14 @@ export default function RegisterForm() {
   const router = useRouter();
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+    // Check password safety  
     if (!name || !email || !password || !id) {
       setError("All fields are necessary.");
       return;
     }   
     try {
-      const res = await fetch("api/register", {
+        // Create User
+        const res = await fetch("api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

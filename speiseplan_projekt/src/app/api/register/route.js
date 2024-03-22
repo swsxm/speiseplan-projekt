@@ -22,9 +22,8 @@ export async function POST(req) {
     try {
         const { name, email, id, password } = await req.json();
 
-        // Serverseitige Passwortvalidierung
+        // Validate Passowrd
         if (!validatePassword(password)) {
-            // Direkte Rückmeldung, wenn das Passwort nicht den Anforderungen entspricht
             return NextResponse.json({ status: 400});
         }
 

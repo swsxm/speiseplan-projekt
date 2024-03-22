@@ -1,3 +1,5 @@
+// MONGO DB USERS SCHEME
+
 import mongoose, {Schema} from "mongoose";
 
 const usersSchema = new Schema({
@@ -26,7 +28,6 @@ const usersSchema = new Schema({
 {
     timestamps: true
 });
-
 
 const Users = mongoose.models.Users || mongoose.model("Users", usersSchema);
 export default Users;
