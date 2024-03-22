@@ -57,18 +57,18 @@ export default function Navbar() {
         <nav>
           <ul className='flex flex-col p-4 text-gray-800'>
             <li className='text-xl py-4 flex'>
-            <Link href={"/Profile/Cart"}>
+            <Link href={"/profile/cart"}>
                 <button className='text-xl py-4 flex transparent-button'> <FaShoppingCart size={25} className='mr-4' /> Shopping Cart</button>
             </Link>
             </li>
             <li className='text-xl py-4 flex'>
-            <Link href={"/Speiseplan"}>
+            <Link href={"/speiseplan"}>
                 <button className='text-xl py-4 flex transparent-button'> <FaHamburger size={25} className='mr-4' /> Speiseplan</button>
             </Link>
              
             </li>
             <li className='text-xl py-4 flex'>
-              <Link href={"/Login"}>
+              <Link href={"/login"}>
                 <button className='text-xl py-4 flex transparent-button'><FaUser size={25} className='mr-4' /> Profil</button>
             </Link>
             </li>
