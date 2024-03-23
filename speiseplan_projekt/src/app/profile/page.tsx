@@ -1,11 +1,13 @@
 'use client'
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; 
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 
- function profile() {
-  const router = useRouter();
 
+
+function Profile() { 
+  
+  const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [personalNumber, setPersonalNumber] = useState('');
@@ -73,4 +75,5 @@ import { useEffect, useState } from "react";
     </div>
   );
 }
-export default profile;
+
+export default Profile; 
