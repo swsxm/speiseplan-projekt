@@ -195,25 +195,46 @@ export default function Speiseplan() {
       <div className='max-w-[1640px] mx-auto p-4 py-12 grid md:grid-cols-2 gap-6'>
         {/* Karten für die Menüpunkte des ausgewählten Tags */}
         {menuData.map((item, index) => (
-  <div key={index} className='rounded-xl relative'>
-    <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 text-white rounded-xl p-4 flex flex-col overflow-hidden'>
-      <p className='font-bold text-2xl mb-2 overflow-hidden'>{item.Name}</p>
-      <p className='text-sm overflow-hidden px-2'>{item.Beschreibung}</p>
-      <p className='absolute top-2 right-2  text-gray-300'>{item.type}</p>
-      {/* Button */}
-      <button onClick={() => openModal(item)}>Öffne Modal mit Parametern</button>
-      {/* Render Modal */}
-      
-      <p className='absolute buttom-2 right-2 text-2xl pt-5 pr-5 mt-20'>{item.price}€</p>
-    </div>
+  <div key={index} className='relative rounded-xl'>
     {/* Image */}
     <img
       className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
       src={item.link_fur_image}
       alt='/'
     />
+    {/* Overlay */}
+    <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 text-white rounded-xl p-4 flex flex-col justify-between'>
+      {/* Menu Beschreibung */}
+      <div className="flex flex-col justify-between h-full">
+        {/* Name der Speise und Typ */}
+        <div className="flex justify-between">
+          <p className='font-bold text-2xl overflow-hidden'>{item.Name}</p>
+          <p className='text-sm overflow-hidden'>{item.type}</p>
+        </div>
+        {/* Beschreibung */}
+        <p className='text-sm overflow-hidden px-2 text-center flex-grow flex items-center justify-center' style={{alignItems: 'flex-start'}}>{item.Beschreibung}</p>
+      </div>
+      {/* Shopping Cart Button */}
+      {(selectedWeekKey === "nextWeek") &&  (
+      <button
+        className='bg-green-400 text-white rounded-full w-12 h-12 flex items-center justify-center absolute bottom-2 left-2'
+        onClick={() => openModal(item)}
+      >
+        <MdOutlineShoppingCart size={24} />
+          </button>)
+        }
+      {/* Price */}
+      <p className='absolute bottom-2 right-2 text-2xl'>{item.price}€</p>
+    </div>
   </div>
 ))}
+
+
+
+
+
+
+
        
       </div>
       <div className='max-w-[820px] mx-auto p-4 py-12 grid md:grid-cols-1 gap-6 justify-center'>
