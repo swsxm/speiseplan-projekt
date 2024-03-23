@@ -26,6 +26,8 @@ export default function Speiseplan() {
         price: number;
         link_fur_image: string;
         type: string;
+        day: string;
+        date: string;
       }
 
   const [userName, setUserName] = useState('');
@@ -34,6 +36,8 @@ export default function Speiseplan() {
 
 
   const openModal = (item: MenuItem) => {
+    item.day = selectedTag;
+    item.date = selectedDate;
     setSelectedItem(item);
     setIsModalOpen(true);
   };
@@ -124,6 +128,7 @@ export default function Speiseplan() {
     }
   };
   const selectedDate = getDateForSelectedTag();
+
 
   //Funktion um zu prüfen ob es feritag 18 uhr ist
   const getFriday18 = () => {

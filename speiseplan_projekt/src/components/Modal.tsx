@@ -8,6 +8,8 @@ interface MenuItem {
   price: number;
   link_fur_image: string;
   type: string;
+  day: string;
+  date: string;
 }
 
 interface ModalProps {
@@ -51,6 +53,8 @@ const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
             <div className="mt-2 px-7 py-3">
               <p className="text-lg text-gray-500">{param1.Beschreibung}</p>
               <p className="text-lg text-gray-500">{param1.type}</p>
+              <p className="text-lg text-gray-500">{param1.date}</p>
+              <p className="text-lg text-gray-500">{param1.day}</p>
             </div>
             <h3 className="text-2xl font-bold text-gray-900">{param1.price}€</h3>
             <div className="flex justify-center mt-4">
