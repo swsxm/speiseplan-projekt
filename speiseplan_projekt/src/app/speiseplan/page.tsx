@@ -160,7 +160,7 @@ export default function Speiseplan() {
               selectionMode="single"
               selectedKeys={[selectedTag]} // Verwenden Sie den ausgewählten Tag als selectedKeys
               
-              className="bg-white rounded-lg p-3 text-lg"
+              className="rounded-lg p-3 text-lg"
             >
               <DropdownSection title="Aktuelle Woche"  showDivider>
               
