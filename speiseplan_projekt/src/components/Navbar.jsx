@@ -19,10 +19,6 @@ export default function Navbar() {
     }
   }, []); // Empty dependency array ensures this effect runs only once on mount
 
-  const handleClick = () => {
-    window.location.reload(); // Reload the page
-  };
-
   return (
     <div className='max-w-[1640px] mx-auto flex justify-between items-center p-4 text-white'>
       {/* Left side */}
@@ -30,7 +26,7 @@ export default function Navbar() {
         <div onClick={() => setNav(!nav)} className='cursor-pointer'>
           <AiOutlineMenu color='black' size={30} />
         </div>
-        <Link href={"/"} passHref>
+        <Link href={"/"}>
           <h1 className='text-2xl sm:text-3xl lg:text-4xl px-2 border-spacing-1 text-black font-serif'>
             <span className='font-bold font-sans text-green-500'>Kantinerado</span>
           </h1>
@@ -41,8 +37,8 @@ export default function Navbar() {
         </div>
       </div>
       {/* Login button */}
-      <Link href={"/login"} passHref>
-        <button className='bg-black text-white hidden md:flex items-center py-2 rounded-full' onClick={handleClick}>
+      <Link href={"/login"}>
+        <button className='bg-black text-white hidden md:flex items-center py-2 rounded-full'>
           <div className='flex items-center m-1'>
             <FaUser className="w-5 h-5"/> {userName ? userName : 'login'}
           </div>
@@ -61,25 +57,20 @@ export default function Navbar() {
         <nav>
           <ul className='flex flex-col p-4 text-gray-800'>
             <li className='text-xl py-4 flex'>
-              <Link href={"/profile/cart"} passHref>
-                <button className='text-xl py-4 flex transparent-button' onClick={handleClick}>
-                  <FaShoppingCart size={25} className='mr-4' /> Shopping Cart
-                </button>
-              </Link>
+            <Link href={"/profile/cart"}>
+                <button className='text-xl py-4 flex transparent-button'> <FaShoppingCart size={25} className='mr-4' /> Shopping Cart</button>
+            </Link>
             </li>
             <li className='text-xl py-4 flex'>
-              <Link href={"/speiseplan"} passHref>
-                <button className='text-xl py-4 flex transparent-button' onClick={handleClick}>
-                  <FaHamburger size={25} className='mr-4' /> Speiseplan
-                </button>
-              </Link>
+            <Link href={"/speiseplan"}>
+                <button className='text-xl py-4 flex transparent-button'> <FaHamburger size={25} className='mr-4' /> Speiseplan</button>
+            </Link>
+             
             </li>
             <li className='text-xl py-4 flex'>
-              <Link href={"/login"} passHref>
-                <button className='text-xl py-4 flex transparent-button' onClick={handleClick}>
-                  <FaUser size={25} className='mr-4' /> Profil
-                </button>
-              </Link>
+              <Link href={"/login"}>
+                <button className='text-xl py-4 flex transparent-button'><FaUser size={25} className='mr-4' /> Profil</button>
+            </Link>
             </li>
             <li>
               <AiOutlineClose
