@@ -1,4 +1,4 @@
-const { PDFDocument, rgb } = require('pdf-lib');
+ const { PDFDocument, rgb } = require('pdf-lib');
 
 async function generatePDF(cartItems) {
   const pdfDoc = await PDFDocument.create();

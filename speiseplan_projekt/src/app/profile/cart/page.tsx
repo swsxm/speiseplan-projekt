@@ -25,17 +25,17 @@ const Cart = () => {
       const rawDataFromLocalStorage = localStorage.getItem("cartItems");
       if (!rawDataFromLocalStorage) {
         console.warn("Keine Elemente im Local Storage gefunden");
-        setLoading(false); // Update loading state when finished reading from local storage
+        setLoading(false); 
         return [];
       }
   
       try {
         const parsedData: MenuItem[] = JSON.parse(rawDataFromLocalStorage);
         setCartItems(parsedData);
-        setLoading(false); // Update loading state when finished parsing data
+        setLoading(false); 
       } catch (error) {
         console.error("Fehler beim Parsen der Daten aus dem Local Storage:", error);
-        setLoading(false); // Update loading state even in case of error
+        setLoading(false); 
       }
     };
   
@@ -43,22 +43,17 @@ const Cart = () => {
   }, []);
   console.log(cartItems)
   const removeItemFromCart = (idToRemove: number) => {
-    // Filtere die Elemente, um das zu entfernende Element zu finden
     const updatedCartItems = cartItems.filter((item: MenuItem) => item.id !== idToRemove);
   
-    // Aktualisiere den Zustand mit den verbleibenden Elementen im Warenkorb
     setCartItems(updatedCartItems);
     
-    // Aktualisiere die Warenkorbdetails im lokalen Speicher
     const rawDataFromLocalStorage = localStorage.getItem('cartItems');
     if (rawDataFromLocalStorage) {
       try {
         const rawData: MenuItem[] = JSON.parse(rawDataFromLocalStorage);
         
-        // Filtere die gespeicherten Elemente, um das zu entfernende Element zu finden
         const updatedRawData = rawData.filter(item => item.id !== idToRemove);
   
-        // Aktualisiere die Warenkorbdetails im lokalen Speicher
         localStorage.setItem('cartItems', JSON.stringify(updatedRawData));
       } catch (error) {
         console.error('Fehler beim Parsen der Daten aus dem Local Storage:', error);
@@ -89,14 +84,19 @@ const Cart = () => {
     for (const item of cartItems) {
       totalPrice += item.price * item.quantity;
     }
-    return parseFloat(totalPrice.toFixed(2)); // Return the total price with two decimal places
+    return parseFloat(totalPrice.toFixed(2)); 
   };
 
   useEffect(() => {
-    // Update the total price whenever cartItems changes
     setTotalPrice(calculateTotalPrice());
   }, [cartItems]);
-
+  const clearCart = () => {
+    // Leere den Warenkorb im Zustand
+    setCartItems([]);
+    
+    // Entferne den Warenkorb-Eintrag aus dem Local Storage
+    localStorage.removeItem('cartItems');
+  };
   return (
     <div>
       <Navbar />
@@ -118,7 +118,6 @@ const Cart = () => {
             <div key={cartItem.id}>
               <div className="flex items-center border-b border-gray-200 py-4">
                 <div className="flex-none w-24 mr-4">
-                  {/* Du musst das Bild für jedes cartItem in deinem MenuItem-Interface hinzufügen */}
                   <img src={cartItem.link_fur_image} alt={cartItem.Name} className="w-full" />
                 </div>
                 <div className="flex-grow">
@@ -159,7 +158,7 @@ const Cart = () => {
             Weiter
           </button>
 
-          <button  className="px-4 py-3 inline-block text-lg w-full text-center font-medium text-red-600 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100">
+          <button  onClick={() => clearCart()}className="px-4 py-3 inline-block text-lg w-full text-center font-medium text-red-600 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100">
             Warenkorb leeren
             </button>
           </article>
