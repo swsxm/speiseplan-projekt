@@ -36,7 +36,7 @@ function Profile() {
         method: 'POST',
       });
       if (response.ok) {
-        router.push('/');
+        router.refresh();
       } else {
         console.error('Failed to logout');
       }
