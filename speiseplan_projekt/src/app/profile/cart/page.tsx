@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
+import generatePDF from "@/lib/generatePDF"
 
 interface MenuItem {
   _id: string;
@@ -96,6 +97,38 @@ const Cart = () => {
     
     // Entferne den Warenkorb-Eintrag aus dem Local Storage
     localStorage.removeItem('cartItems');
+    window.location.reload();
+  };
+  const handleContinue = async () => {
+    try {
+      const ordered_meals_id = cartItems.map(item => ({
+        type: item.id,
+        quantity: item.quantity,
+        date: item.date,
+        day: item.day
+      }));
+      const res = await fetch("../api/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ordered_meals_id}),
+      });
+      const pdfBlob = await generatePDF(cartItems);
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.setAttribute('download', 'bestelluebersicht.pdf');
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link); 
+
+      clearCart();
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div>
@@ -154,7 +187,7 @@ const Cart = () => {
             </li>
           </ul>
 
-          <button className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer">
+          <button onClick={() => handleContinue()} className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer">
             Weiter
           </button>
 

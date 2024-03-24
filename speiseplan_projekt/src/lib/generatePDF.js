@@ -1,6 +1,6 @@
- const { PDFDocument, rgb } = require('pdf-lib');
+import { PDFDocument, rgb } from 'pdf-lib';
 
-async function generatePDF(cartItems) {
+ async function generatePDF(cartItems) {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage();
   const { width, height } = page.getSize();
@@ -25,7 +25,12 @@ async function generatePDF(cartItems) {
 
   const tableData = [
     ['Artikel', 'Datum', 'Menge', 'Einzelpreis'],
-    ...cartItems.map(item => [item.meal, item.date_parsed, String(item.quantity), `${item.price} €`])
+    ...cartItems.map(item => [
+      item.Name || '', 
+      item.date || '', 
+      String(item.quantity || ''), 
+      `${item.price || ''} €`
+    ])
   ];
 
   const drawTable = (table, startX, startY, cellPadding) => {
@@ -36,7 +41,7 @@ async function generatePDF(cartItems) {
     for (let i = 0; i < table.length; i++) {
       const row = table[i];
       for (let j = 0; j < row.length; j++) {
-        const text = row[j];
+        const text = row[j] || ''; // Überprüfung auf undefined und Zuweisung eines leeren Strings
         const x = startX + getColumnXOffset(j, columnWidths, cellPadding);
         y = startY - i * lineHeight - cellPadding;
         page.drawText(text, { x, y, size: fontSize });
@@ -78,5 +83,4 @@ async function generatePDF(cartItems) {
   const pdfBytes = await pdfDoc.save();
   return new Blob([pdfBytes], { type: "application/pdf" });
 }
-
-module.exports = generatePDF;
+export default generatePDF;
