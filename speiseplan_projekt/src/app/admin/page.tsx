@@ -68,15 +68,17 @@ export default function Admin() {
                 <button onClick={openCreateMealModal}>Neues Gericht erstellen</button>
               </li>
               <li>
-                <a href="/admin/create-menu" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/Account/Admin/MenuScheduler' ? 'text-green-500' : 'text-black'}`}>
-                  Menu erstellen
-                </a>
-              </li>
-              <li>
-                <a href="/admin" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/Admin/WeekOverview' ? 'text-green-500' : 'text-black'}`}>
+                <a href="/admin" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/admin' ? 'text-green-500' : 'text-black'}`}>
                   Wochenübersicht
                 </a>
               </li>
+              <li>
+                <a href="/admin/create-menu" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/admin/create-menu' ? 'text-green-500' : 'text-black'}`}>
+                  Menu erstellen
+                </a>
+              </li>
+
+             
             </ul>
           </div>
         </div>
