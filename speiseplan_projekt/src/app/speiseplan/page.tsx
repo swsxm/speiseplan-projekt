@@ -28,6 +28,7 @@ export default function Speiseplan() {
         type: string;
         day: string;
         date: string;
+        quantity: number;
       }
 
   const [userName, setUserName] = useState('');
@@ -127,7 +128,7 @@ export default function Speiseplan() {
       }
     }
   };
-  const selectedDate = getDateForSelectedTag();
+  const selectedDate = getDateForSelectedTag() || ''; // Use empty string as default value if undefined
 
 
   //Funktion um zu prüfen ob es feritag 18 uhr ist

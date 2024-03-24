@@ -10,6 +10,7 @@ interface MenuItem {
   type: string;
   day: string;
   date: string;
+  quantity: number;
 }
 
 interface ModalProps {
@@ -18,29 +19,32 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
-    const [itemAdded, setItemAdded] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits hinzugefügt wurde
-    const [isItemInCart, setIsItemInCart] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits im Warenkorb ist
-  
-    const addToCart = () => {
-      if (param1) {
-        // Aktuelle Liste aus dem Local Storage abrufen
-        const currentCart = JSON.parse(localStorage.getItem('cartItems') || '[]'); // Standardwert als leeres Array, falls cartItems nicht vorhanden ist oder kein gültiges JSON enthält
-        
-        // Check if the item is already in the cart
-        const isItemInCart = currentCart.some((item: MenuItem) => item._id === param1._id);
-        
-        if (!isItemInCart) {
-          // Neue Element zur Liste hinzufügen
-          const updatedCart = [...currentCart, param1];
-          // Aktualisierte Liste im Local Storage speichern
-          localStorage.setItem('cartItems', JSON.stringify(updatedCart));
-          setItemAdded(true); 
-          closeModal();
-        } else {
-          setIsItemInCart(true); // Setze den Zustand, um anzuzeigen, dass das Element bereits im Warenkorb ist
-        }
+  const [itemAdded, setItemAdded] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits hinzugefügt wurde
+  const [isItemInCart, setIsItemInCart] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits im Warenkorb ist
+
+  const addToCart = () => {
+    if (param1) {
+      // Erstelle eine Kopie von param1 mit quantity: 1
+      const itemWithQuantity: MenuItem = { ...param1, quantity: 1 };
+      
+      // Aktuelle Liste aus dem Local Storage abrufen
+      const currentCart = JSON.parse(localStorage.getItem('cartItems') || '[]'); // Standardwert als leeres Array, falls cartItems nicht vorhanden ist oder kein gültiges JSON enthält
+      
+      // Überprüfe, ob das Element bereits im Warenkorb ist
+      const isItemInCart = currentCart.some((item: MenuItem) => item._id === itemWithQuantity._id);
+      
+      if (!isItemInCart) {
+        // Füge das neue Element zur Liste hinzu
+        const updatedCart = [...currentCart, itemWithQuantity];
+        // Aktualisierte Liste im Local Storage speichern
+        localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+        setItemAdded(true); 
+        closeModal();
+      } else {
+        setIsItemInCart(true); // Setze den Zustand, um anzuzeigen, dass das Element bereits im Warenkorb ist
       }
-    };
+    }
+  };
   
     if (!param1) return null; // Render nothing if param1 is null
   
