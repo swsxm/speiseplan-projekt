@@ -152,13 +152,13 @@ export default function Speiseplan() {
                                 <button onClick={openCreateMealModal}>Neues Gericht erstellen</button>
                             </li>
                             <li>
-                                <a href="/Admin/MenuScheduler" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/Admin/MenuScheduler' ? 'text-green-500' : 'text-black'}`}>
-                                    Menu erstellen
+                                <a href="/admin" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/admin' ? 'text-green-500' : 'text-black'}`}>
+                                Wochenübersicht
                                 </a>
                             </li>
                             <li>
-                                <a href="/Admin/WeekOverview" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/Admin/WeekOverview' ? 'text-green-500' : 'text-black'}`}>
-                                    Wochenübersicht
+                                <a href="/admin/create-menu" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/admin/create-menu' ? 'text-green-500' : 'text-black'}`}>
+                                Menu erstellen
                                 </a>
                             </li>
                         </ul>
@@ -192,23 +192,23 @@ export default function Speiseplan() {
             </div>
             {/* Meal in DB */}
             <div className='max-w-[820px] mx-auto p-4 py-12 grid md:grid-cols-1 gap-6 justify-center'>
-      {menuInDB.map((item, index) => (
-        <div key={item._id} className='rounded-xl relative' data-testid={`assigned-meal-${index}`}> {/* Add data-testid for testing */}
-          {/* Overlay */}
-          <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 text-white rounded-xl p-4 flex flex-col overflow-hidden'>
-            <p className='font-bold text-2xl mb-2 overflow-hidden'>{item.Name}</p>
-            <p className='text-sm overflow-hidden px-2'>{item.Beschreibung}</p>
-            <p className='absolute top-2 right-2 text-gray-300'>{item.type}</p>
-            <p className='absolute bottom-2 right-2 text-2xl pt-5 pr-5 mt-20'>{item.price}€</p>
-          </div>
-          {/* Image */}
-          <img
-            className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
-            src={item.link_fur_image}
-            alt='/'
-          />
-        </div>
-      ))}
+            {menuInDB.map((item, index) => (
+                <div key={item._id} className='rounded-xl relative' data-testid={`assigned-meal-${index}`}> 
+                {/* Overlay */}
+                <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 text-white rounded-xl p-4 flex flex-col overflow-hidden'>
+                    <p className='font-bold text-2xl mb-2 overflow-hidden'>{item.Name}</p>
+                    <p className='text-sm overflow-hidden px-2'>{item.Beschreibung}</p>
+                    <p className='absolute top-2 right-2 text-gray-300'>{item.type}</p>
+                    <p className='absolute bottom-2 right-2 text-2xl pt-5 pr-5 mt-20'>{item.price}€</p>
+                </div>
+                {/* Image */}
+                <img
+                    className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
+                    src={item.link_fur_image}
+                    alt='/'
+                />
+                </div>
+            ))}
     </div>
          
              <div className='max-w-[1640px] mx-auto p-4 py-12 grid md:grid-cols-2 gap-6'>
