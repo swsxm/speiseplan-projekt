@@ -44,7 +44,11 @@ export async function GET(req, res) {
         const startOfWeek = new Date(currentDate);
         const endOfWeek = new Date(currentDate);
         startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+        startOfWeek.setHours(0, 0, 0, 0);
+        
         endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
         const nextWeek = await getNextWeekNumber(); 
         console.log(startOfWeek)
         console.log(endOfWeek)
