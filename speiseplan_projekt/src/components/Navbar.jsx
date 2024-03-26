@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaUser, FaHamburger, FaShoppingCart } from 'react-icons/fa';
@@ -21,7 +22,7 @@ export default function Navbar() {
 
   const handleLinkClick = (href) => {
     // Refresh the page
-    Router.reload();
+    Router.refresh();
     // Navigate to the desired href after the page is refreshed
     Router.push(href);
   };
