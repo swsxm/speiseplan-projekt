@@ -43,19 +43,27 @@ export async function GET(req, res) {
         const currentDate = new Date();
         const startOfWeek = new Date(currentDate);
         const endOfWeek = new Date(currentDate);
-        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + (currentDate.getDay() === 0 ? -6 : 1));
+        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
         endOfWeek.setDate(startOfWeek.getDate() + 6);
-
         const nextWeek = await getNextWeekNumber(); 
-
+        console.log(startOfWeek)
+        console.log(endOfWeek)
         const weekDocument = await Weeks.findOne({ "week-number": nextWeek });
-
         const planDocument = await Plan.find({ "week-id": weekDocument._id });
-
         const processedOrders = [];
+        console.log(startOfWeek)
+        console.log(endOfWeek)
+
+        // Maintain a set of processed meal IDs
+        const processedMealIds = new Set();
 
         for (const day of planDocument) {
             for (const id of day['meal-ids']) {
+                // Check if the meal ID has already been processed
+                if (processedMealIds.has(id)) {
+                    continue; // Skip processing if already processed
+                }
+
                 let quantity = 0;
                 let price = 0;
                 let url = null;
@@ -63,6 +71,8 @@ export async function GET(req, res) {
                 let beschreibung = '';
                 let type = '';
                 let found = false;
+                
+                // Fetch all orders for the current meal ID within the week
                 const ordersForMeal = await Order.find({
                     "orderedMeals.id": id,
                     date: {
@@ -70,23 +80,25 @@ export async function GET(req, res) {
                         $lte: endOfWeek
                     }
                 });
+
+                // Accumulate quantities across orders
                 for (const order of ordersForMeal) {
                     for (const orderedMeal of order.orderedMeals) {
                         if (orderedMeal.id === id) {
                             quantity += orderedMeal.quantity;
-                            const meal = await Meals.findOne({ 'id': id }); 
-                            if (meal) {
-                                price += orderedMeal.quantity * meal.price;
-                                url = meal.link_fur_image; 
-                                name = meal.Name;
-                                beschreibung = meal.Beschreibung; 
-                                type = meal.type;
-                                found = true;
-                            }
+                            found = true;
                         }
                     }
                 }
-                if (found) {
+
+                // Fetch meal details
+                const meal = await Meals.findOne({ 'id': id }); 
+                if (meal && found) {
+                    price = (quantity * meal.price);
+                    url = meal.link_fur_image; 
+                    name = meal.Name;
+                    beschreibung = meal.Beschreibung; 
+                    type = meal.type;
                     processedOrders.push({
                         id: id,
                         anzahl: quantity,
@@ -96,10 +108,10 @@ export async function GET(req, res) {
                         Beschreibung: beschreibung,
                         type
                     });
+                    processedMealIds.add(id); // Add the processed meal ID to the set
                 }
             }
         }
-
         return NextResponse.json({ status: 200, orders: processedOrders });
     } catch (error) {
         console.error("Error retrieving orders:", error);
