@@ -22,7 +22,6 @@ export default function Navbar() {
 
   const handleLinkClick = (href) => {
     // Refresh the page
-    Router.refresh();
     // Navigate to the desired href after the page is refreshed
     Router.push(href);
   };
@@ -62,19 +61,19 @@ export default function Navbar() {
         <nav>
           <ul className='flex flex-col p-4 text-gray-800'>
             <li className='text-xl py-4 flex'>
-              <button className='text-xl py-4 flex transparent-button' onClick={() => handleLinkClick("/profile/cart")}>
-                <FaShoppingCart size={25} className='mr-4' /> Shopping Cart
-              </button>
+            <Link href={"/profile/cart"}>
+                <button className='text-xl py-4 flex transparent-button'> <FaShoppingCart size={25} className='mr-4' /> Shopping Cart</button>
+            </Link>
             </li>
             <li className='text-xl py-4 flex'>
-              <button className='text-xl py-4 flex transparent-button' onClick={() => handleLinkClick("/speiseplan")}>
-                <FaHamburger size={25} className='mr-4' /> Speiseplan
-              </button>
+            <Link href={"/speiseplan"}>
+                <button className='text-xl py-4 flex transparent-button'> <FaHamburger size={25} className='mr-4' /> Speiseplan</button>
+            </Link>
             </li>
-            <li className='text-xl py-4 flex'>
-              <button className='text-xl py-4 flex transparent-button' onClick={() => handleLinkClick("/login")}>
-                <FaUser size={25} className='mr-4' /> Profil
-              </button>
+            <li className='tex-xl py-4 flex'>
+            <Link href={"/login"}>
+                <button className='text-xl py-4 flex transparent-button'><FaUser size={25} className='mr-4' /> Profil</button>
+            </Link>
             </li>
             <li>
               <AiOutlineClose

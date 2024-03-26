@@ -35,8 +35,8 @@ export default function Login() {
           setError('Invalid Credentials');
         }
         else {
-          Router.refresh();
-          Router.push('/');
+          await window.location.reload();
+          Router.replace('/');
           
         }
       } 
