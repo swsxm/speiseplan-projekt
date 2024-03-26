@@ -39,10 +39,7 @@ export default function Navbar() {
             <span className='font-bold font-sans text-green-500'>Kantinerado</span>
           </h1>
         </Link>
-        <div className='hidden lg:flex items-center bg-gray-200 rounded-full p-1 text-[16px]'>
-          <p className='bg-black text-white rounded-full p-2'>Light</p>
-          <p className='p-2 text-black'>Dark</p>
-        </div>
+        
       </div>
       {/* Login button */}
       <Link href={"/login"}>
