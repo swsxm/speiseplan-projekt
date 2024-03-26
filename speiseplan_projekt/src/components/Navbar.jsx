@@ -1,15 +1,15 @@
-'use client'
-
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaUser, FaHamburger, FaShoppingCart } from 'react-icons/fa';
 import Link from "next/link";
 import { parseCookies } from 'nookies';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const [nav, setNav] = useState(false);
   const [userName, setUserName] = useState('');
-
+  const Router = useRouter();
+  
   useEffect(() => {
     // Read the cookie value once the component mounts on the client side
     const cookies = parseCookies();
@@ -18,6 +18,13 @@ export default function Navbar() {
       setUserName(name);
     }
   }, []); // Empty dependency array ensures this effect runs only once on mount
+
+  const handleLinkClick = (href) => {
+    // Refresh the page
+    Router.reload();
+    // Navigate to the desired href after the page is refreshed
+    Router.push(href);
+  };
 
   return (
     <div className='max-w-[1640px] mx-auto flex justify-between items-center p-4 text-white'>
@@ -57,20 +64,19 @@ export default function Navbar() {
         <nav>
           <ul className='flex flex-col p-4 text-gray-800'>
             <li className='text-xl py-4 flex'>
-            <Link href={"/profile/cart"}>
-                <button className='text-xl py-4 flex transparent-button'> <FaShoppingCart size={25} className='mr-4' /> Shopping Cart</button>
-            </Link>
+              <button className='text-xl py-4 flex transparent-button' onClick={() => handleLinkClick("/profile/cart")}>
+                <FaShoppingCart size={25} className='mr-4' /> Shopping Cart
+              </button>
             </li>
             <li className='text-xl py-4 flex'>
-            <Link href={"/speiseplan"}>
-                <button className='text-xl py-4 flex transparent-button'> <FaHamburger size={25} className='mr-4' /> Speiseplan</button>
-            </Link>
-             
+              <button className='text-xl py-4 flex transparent-button' onClick={() => handleLinkClick("/speiseplan")}>
+                <FaHamburger size={25} className='mr-4' /> Speiseplan
+              </button>
             </li>
             <li className='text-xl py-4 flex'>
-              <Link href={"/login"}>
-                <button className='text-xl py-4 flex transparent-button'><FaUser size={25} className='mr-4' /> Profil</button>
-            </Link>
+              <button className='text-xl py-4 flex transparent-button' onClick={() => handleLinkClick("/login")}>
+                <FaUser size={25} className='mr-4' /> Profil
+              </button>
             </li>
             <li>
               <AiOutlineClose
