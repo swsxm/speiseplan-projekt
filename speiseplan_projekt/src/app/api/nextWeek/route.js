@@ -45,7 +45,7 @@ export async function GET(req, res) {
         const endOfWeek = new Date(currentDate);
         startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
         startOfWeek.setHours(0, 0, 0, 0);
-        
+
         endOfWeek.setDate(startOfWeek.getDate() + 6);
         endOfWeek.setHours(23, 59, 59, 999);
 
@@ -98,7 +98,8 @@ export async function GET(req, res) {
                 // Fetch meal details
                 const meal = await Meals.findOne({ 'id': id }); 
                 if (meal && found) {
-                    price = (quantity * meal.price);
+                    price = (quantity * meal.price).toFixed(2);
+                   
                     url = meal.link_fur_image; 
                     name = meal.Name;
                     beschreibung = meal.Beschreibung; 

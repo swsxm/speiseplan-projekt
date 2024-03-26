@@ -41,8 +41,8 @@ export default function Admin() {
     let totalPrice = 0;
     let totalAmount = 0;
     menuItems.forEach((item) => {
-      totalPrice += item.price;
-      totalAmount += item.anzahl;
+      totalPrice += Number(item.price);
+      totalAmount += Number(item.anzahl);
     });
     setTotalPrice(totalPrice);
     setTotalAmount(totalAmount);
