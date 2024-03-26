@@ -152,7 +152,7 @@ export default function Speiseplan() {
 
         {/* Dropdown für die Auswahl des Wochentags */}
         <div className='flex justify-center'>
-          <Dropdown>
+          <Dropdown className='bg-green-300 rounded-lg p-3'>
             <DropdownTrigger className='p-3 flex items-center'>
               <Button 
                 className="capitalize flex items-center text-2xl"
@@ -184,7 +184,7 @@ export default function Speiseplan() {
               
               {/* Dropdown-Elemente für die Wochentage */}
               {['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'].map(day => (
-                <DropdownItem key={`nextWeek_${day}`} onClick={() => {
+                <DropdownItem  key={`nextWeek_${day}`} onClick={() => {
                   setSelectedTag(day); // Setze den ausgewählten Tag
                   setselectedWeekKey("nextWeek");//Setze ausgewählte Woche auf nextWeek
                 }}className='hover:bg-gray-200'>
