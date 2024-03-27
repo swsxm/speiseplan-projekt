@@ -44,7 +44,7 @@ export default function Navbar() {
       <Link href={"/login"}>
         <button className='bg-black text-white hidden md:flex items-center py-2 rounded-full'>
           <div className='flex items-center m-1'>
-            <FaUser className="w-5 h-5"/> {userName ? userName : 'login'}
+            <FaUser className="w-5 h-5"/> {userName ? userName : 'Anmelden'}
           </div>
         </button>
       </Link>
@@ -62,7 +62,7 @@ export default function Navbar() {
           <ul className='flex flex-col p-4 text-gray-800'>
             <li className='text-xl py-4 flex'>
             <Link href={"/profile/cart"}>
-                <button className='text-xl py-4 flex transparent-button'> <FaShoppingCart size={25} className='mr-4' /> Shopping Cart</button>
+                <button className='text-xl py-4 flex transparent-button'> <FaShoppingCart size={25} className='mr-4' /> Einkaufswagen</button>
             </Link>
             </li>
             <li className='text-xl py-4 flex'>
