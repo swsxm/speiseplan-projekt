@@ -64,7 +64,7 @@ const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
             <div className="flex justify-center mt-4">
               <span className="close absolute top-0 right-0 m-2 text-gray-600 cursor-pointer" onClick={closeModal}>&times;</span>
             </div>
-            {isItemInCart && <p className="text-red-500">Item is already in the cart</p>}
+            {isItemInCart && <p className="text-red-500">Ausgewähltes Menu ist bereits im Einkaufswagen</p>}
             {/* Button */}
             {!isItemInCart && <button className="bg-green-400 text-white rounded-md w-full py-2 mt-4" onClick={addToCart}>Warenkorb hinzufuegen</button>}
           </div>

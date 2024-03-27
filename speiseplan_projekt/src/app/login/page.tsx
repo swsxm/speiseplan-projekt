@@ -53,7 +53,7 @@ export default function Login() {
         
         <div  className="flex flex-col h-screen justify-center items-center">
         <div className="shadow-lg p-8 rounded-lg border-t-4 border-green-400">
-            <h1 className="text-xl font-bold my-4">Login</h1>
+            <h1 className="text-xl font-bold my-4">Anmelden</h1>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
@@ -79,7 +79,7 @@ export default function Login() {
             )}
             <div className="flex justify-center">
             <Link className="text-sm mt-4" href={"/register"}>
-               Dont have an account? <span className="underline">Register</span>
+               Haben sie noch keinen Account? <span className="underline">Registrieren</span>
             </Link>
             </div>
             </form>

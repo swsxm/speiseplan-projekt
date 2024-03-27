@@ -164,7 +164,7 @@ const Cart = () => {
                 </div>
                 <div className="flex-none">
                   <p className="font-semibold">{(cartItem.price! * cartItem.quantity).toFixed(2)} €</p>
-                  <button onClick={() => removeItemFromCart(cartItem.id)} className="text-red-500">Remove</button>
+                  <button onClick={() => removeItemFromCart(cartItem.id)} className="text-red-500">Löschen</button>
 
                 </div>
               </div>

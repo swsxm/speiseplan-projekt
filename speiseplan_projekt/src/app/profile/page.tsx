@@ -67,7 +67,7 @@ function Profile() {
               className="bg-red-500 text-white font-bold cursor-pointer py-2 px-6 rounded"
               onClick={handleLogout}
             >
-              Logout
+              Abmelden
             </button>
           </div>
           

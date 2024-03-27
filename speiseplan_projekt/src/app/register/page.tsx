@@ -65,7 +65,7 @@ export default function RegisterForm() {
         <Navbar/>
         <div  className="flex flex-col h-screen justify-center items-center">
         <div className="shadow-lg p-8 rounded-lg border-t-4 border-green-400">
-            <h1 className="text-xl font-bold my-4">Register</h1>
+            <h1 className="text-xl font-bold my-4">Registrieren</h1>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
@@ -103,7 +103,7 @@ export default function RegisterForm() {
             )}
 
             <Link className="text-sm mt-4 text-right" href={"/login"}>
-                Already have an account? <span className="underline">Login</span>
+                Haben sie bereits einen Account? <span className="underline">Anmelden</span>
             </Link>
             </form>
           </div>
