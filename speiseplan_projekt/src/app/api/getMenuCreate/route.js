@@ -1,76 +1,64 @@
-import Meals from "@/models/meals";
-import Plans from "@/models/plans";
-import Weeks from "@/models/weeks";
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
+import Meals from "@/models/meals";
+import Plans from "@/models/plans";
+import mongoose from 'mongoose';
+import { getWeek } from 'date-fns';
 
 export async function POST(req) {
+    console.log('-----------------------------')
     try {
         await connectMongoDB();
-        
+
         // Extrahiere das Datum und den Typ aus dem Anfrageobjekt
         const { date, type } = await req.json();
         
         // Ermittle die Kalenderwoche aus dem Datum
-        const weekNumber = getWeekNumber(new Date())+2;
-        console.log(weekNumber);
-        
-        // Suche nach der Wochen-ID in der Tabelle 'weeks'
-        const week = await Weeks.findOne({ "week-number" : weekNumber }).exec();
-        console.log(week);
+        const weekNumber = getWeek(new Date(date), { weekStartsOn: 1 });
+        console.log('Week Number:', weekNumber);
 
-        if (!week) {
-            return NextResponse.json(
-                { message: "Keine Daten gefunden für die angegebene Woche." },
-                { status: 404 }
-            );
-        }
-        // Extrahiere den Plan anhand der Wochen-ID und des Wochentags
-        const dayOfWeek = new Date(date).getDay();
-       
-        console.log("type: ",type);
-        // Extrahiere die Meal-ID basierend auf dem Typ aus dem gefundenen Plan
-        let typeId;
-        if (type == "Menu1") {
-            typeId = 0;
-        } else if (type == "Menu2") {
-            typeId = 1;
-        } else if (type == "Nachtisch") {
-            typeId = 2;
-        } else if (type == "Suppe") {
-            typeId = 3;
-        } else {
-            console.log("Typ-ID nicht korrekt");
-            return NextResponse.json(
-                { message: "Typ-ID nicht korrekt" },
-                { status: 400 }
-            );
-        }
-        const plan = await Plans.findOne({ "week-id": week._id, "day-number": dayOfWeek }).exec();
-        let mealIds = plan["meal-ids"]; // meal-ids ist ein Array von Meal-IDs
-        
-        // Wähle die Meal-ID basierend auf typeId
-        let mealId = mealIds[typeId];        // Suche in der Tabelle 'meals' nach den Mahlzeiten basierend auf der Meal-ID
-        console.log(mealId);
-        const meal = await Meals.find({ id: mealId }).exec();
-        return NextResponse.json(meal, { status: 200 });
-        
+        // Extrahiere den Plan anhand der Kalenderwoche und des Wochentags
+        const dayOfWeek = new Date(date).getDay(); // 0 (Sonntag) bis 6 (Samstag)
+
+        // Aggregationspipeline, um Plan zu finden und die entsprechenden Mahlzeiten zu holen
+        const pipeline = [
+            // Schritt 1: Filtert Pläne nach Kalenderwoche und Tag
+            {
+                $match: { "week-id": weekNumber, "day-number": dayOfWeek }
+            },
+            // Schritt 2: Führt einen Lookup mit der meals-Sammlung durch
+            {
+                $lookup: {
+                    from: "meals",
+                    localField: "meal-ids",
+                    foreignField: "_id",
+                    as: "meals"
+                }
+            },
+            // Schritt 3: Entpackt das meals-Array in separate Dokumente
+            {
+                $unwind: "$meals"
+            },
+            // Schritt 4: Filtert Mahlzeiten nach dem Typ
+            {
+                $match: { "meals.type": type }
+            },
+            // Schritt 5: Ersetzt die Wurzel des Dokuments durch das meals-Dokument
+            {
+                $replaceRoot: { newRoot: "$meals" }
+            }
+        ];
+
+        // Führe die Aggregation aus
+        const meals = await Plans.aggregate(pipeline).exec();
+        // Sicherstellen, dass die Antwort ein Array ist
+        return NextResponse.json(Array.isArray(meals) ? meals : []);
+
     } catch (e) {
+        console.error(e);
         return NextResponse.json(
-            { message: e },
+            { message: "Internal Server Error" },
             { status: 500 }
         );
     }
-}
-
-function getWeekNumber(date) {
-    const target = new Date(date);
-    const dayNumber = (date.getDay() + 6) % 7;
-    target.setDate(target.getDate() - dayNumber + 3);
-    const firstThursday = target.valueOf();
-    target.setMonth(0, 1);
-    if (target.getDay() !== 4) {
-        target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-    }
-    return 1 + Math.ceil((firstThursday - target) / 604800000);
 }

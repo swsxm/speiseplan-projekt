@@ -1,50 +1,53 @@
+"@/models/plans";
+import Meal from "@/models/meals";
+import Order from "@/models/orders";
 import Plan from "@/models/plans"
-import Meals from "@/models/meals"
-import Weeks from "@/models/weeks"
 import { NextResponse } from "next/server";
-import { connectMongoDB } from "@/lib/mongodb"
+import { connectMongoDB } from "@/lib/mongodb";
 
 export async function POST(req) {
     try {
         await connectMongoDB();
-        const date_string = await req.json();
-
-        console.log(date_string);
-        var date = new Date(date_string.date);
-        var week_number = getWeekNumber(date);
-        var year = date.getFullYear();
-
-        var day_number = date.getDay();
-
-        console.log("Woche im Jahr:", week_number);
-        console.log("Jahr:", year);
-        console.log("Tag in der Woche:", day_number);
-
-        let week_id = await Weeks.find({"week-number": week_number, "year" : year}).select("_id");
-        let meal_ids = await Plan.findOne({"week-id": week_id, "day-number" : day_number}).select("meal-ids");
-
-        const mealPromises = meal_ids['meal-ids'].map(async element => {
-            const meal = await Meals.find({ "id": element });
-            return meal;
-        });
         
+        // Parse the request JSON to get the date
+        const { date: dateString } = await req.json();
+        const date = new Date(dateString);
+        // Calculate week number and year from the provided date
+        const weekNumber = getWeekNumber(date);
+        const year = date.getFullYear();
+        const dayNumber = date.getDay();
+
+        console.log("Week of the year:", weekNumber);
+        console.log("Year:", year);
+        console.log("Day of the week:", dayNumber);
+        console.log(weekNumber)
+        console.log(dayNumber)
+        // Find the plan for the given week and day
+        const plan = await Plan.findOne({ "week-id": weekNumber, "day-number": dayNumber }).populate('meal-ids').exec();
+        if (!plan) {
+            console.log('kein plan')
+            return NextResponse.json({ message: "Plan not found" }, { status: 404 });
+        }
+
+        // Extract meal IDs from the plan and retrieve meal details
+        const mealIds = plan['meal-ids'];
+        const mealPromises = mealIds.map(meal => Meal.findById(meal).exec());
+        
+        // Fetch all meal details
         const meals = await Promise.all(mealPromises);
-        return NextResponse.json(meals, { status: 201 });
-    }
-    catch (e) {
-
-        return NextResponse.json(
-            { message: e },
-            { status: 500 }
-        )
-
+        return NextResponse.json(meals, { status: 200 });
+    } catch (e) {
+        console.error("Error processing request:", e);
+        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
 }
+
+// Function to calculate the week number from a given date
 function getWeekNumber(datum) {
-    var target = new Date(datum.valueOf());
-    var dayNumber = (datum.getDay() + 6) % 7;
+    const target = new Date(datum.valueOf());
+    const dayNumber = (datum.getDay() + 6) % 7;
     target.setDate(target.getDate() - dayNumber + 3);
-    var firstThursday = target.valueOf();
+    const firstThursday = target.valueOf();
     target.setMonth(0, 1);
     if (target.getDay() !== 4) {
         target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);

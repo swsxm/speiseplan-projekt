@@ -102,10 +102,10 @@ const Cart = () => {
   const handleContinue = async () => {
     try {
       const ordered_meals_id = cartItems.map(item => ({
-        type: item.id,
         quantity: item.quantity,
         date: item.date,
-        day: item.day
+        day: item.day,
+        _id: item._id
       }));
       const res = await fetch("../api/order", {
         method: "POST",

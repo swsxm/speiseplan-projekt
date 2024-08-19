@@ -1,40 +1,54 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import Order from "@/models/orders";
+import Meal from "@/models/plans";
 import { verifyAuth } from "@/lib/verifyToken";
+
+// Function to calculate the week number for a given date
+function getWeekNumber(date) {
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date - startOfYear) / 86400000;
+
+    // Calculate the week number (ISO week date standard)
+    return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+}
 
 export async function POST(req) {
     try {
-        // Token aus der Anfrage extrahieren
+        // Extract the token from the request
         const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ status: 401, message: "Unauthorized" });
         }
-        
-        // Token verifizieren und Benutzerinformationen extrahieren
+
+        // Verify the token and extract user information
         const payload = await verifyAuth(token);
-        // Extrahiere erforderliche Informationen aus der Anfrage
-        const  { ordered_meals_id } = await req.json();
+
+        // Extract required information from the request
+        const { ordered_meals_id } = await req.json();
         const date = new Date();
-        // Stelle eine Verbindung zur MongoDB her
+
+        // Connect to MongoDB
         await connectMongoDB();
-        // Erstelle die Bestellung in der Datenbank
+
+        // Validate if the items can be ordered on the specified days
+        console.log('hier bitte', ordered_meals_id)
+        // Create the order in the database
         await Order.create({
             "user-id": payload.id,
             "date": date,
             "orderedMeals": ordered_meals_id.map(item => ({
                 id: item.type,
-                date: item.date, 
                 quantity: item.quantity,
-                day: item.day
+                day: item.day,
+                mealId: item._id
             }))
         });
-        console.log('jaaa')
-        // Erfolgsmeldung zurückgeben
+
+        // Success message
         return NextResponse.json({ status: 201, message: "Order created successfully" });
     } catch (error) {
         console.error("Error creating order:", error);
-        console.log('jaa')
         return NextResponse.json({ status: 500, message: "Internal Server Error" });
     }
 }

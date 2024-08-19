@@ -1,38 +1,19 @@
 import { connectMongoDB } from "@/lib/mongodb";
 import Order from "@/models/orders";
-import Weeks from "@/models/weeks";
-import Plan from "@/models/plans";
-import Meals from "@/models/meals"; 
+import Meal from "@/models/meals";
 import { verifyAuth } from "@/lib/verifyToken";
 import { NextResponse } from "next/server";
+import { getWeek, startOfWeek, endOfWeek } from 'date-fns';
 
-async function getWeekNumber(datum) {
-    var target = new Date(datum.valueOf());
-    var dayNumber = (datum.getDay() + 6) % 7;
-    target.setDate(target.getDate() - dayNumber + 3);
-    var firstThursday = target.valueOf();
-    target.setMonth(0, 1);
-    if (target.getDay() !== 4) {
-        target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-    }
-    return 1 + Math.ceil((firstThursday - target) / 604800000);
-}
-
-function getNextWeekNumber() {
-    const today = new Date();
-    const nextWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
-    const nextWeekNumber =  getWeekNumber(nextWeek); 
-    return nextWeekNumber;
-}
 
 export async function GET(req, res) {
     try {
-        // Verify user authentication
+        // Benutzer-Authentifizierung überprüfen
         const token = req.cookies.get('token')?.value;
         if (!token) {
-            return NextResponse.json({ status: 401, message: "Unauthorized" }); 
+            return NextResponse.json({ status: 401, message: "Unauthorized" });
         }
-        
+
         const payload = await verifyAuth(token);
         if (!payload.admin) {
             return NextResponse.json({ status: 403, message: "Forbidden" });
@@ -40,84 +21,81 @@ export async function GET(req, res) {
 
         await connectMongoDB();
 
-        const currentDate = new Date();
-        const startOfWeek = new Date(currentDate);
-        const endOfWeek = new Date(currentDate);
-        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1);
-        startOfWeek.setHours(0, 0, 0, 0);
+        // Berechnung des Datumsbereichs für die aktuelle Woche
+        const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
+        const endOfCurrentWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
 
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        endOfWeek.setHours(23, 59, 59, 999);
-
-        const nextWeek = await getNextWeekNumber(); 
-        console.log(startOfWeek)
-        console.log(endOfWeek)
-        const weekDocument = await Weeks.findOne({ "week-number": nextWeek });
-        const planDocument = await Plan.find({ "week-id": weekDocument._id });
-        const processedOrders = [];
-        console.log(startOfWeek)
-        console.log(endOfWeek)
-
-        // Maintain a set of processed meal IDs
-        const processedMealIds = new Set();
-
-        for (const day of planDocument) {
-            for (const id of day['meal-ids']) {
-                // Check if the meal ID has already been processed
-                if (processedMealIds.has(id)) {
-                    continue; // Skip processing if already processed
-                }
-
-                let quantity = 0;
-                let price = 0;
-                let url = null;
-                let name = '';
-                let beschreibung = '';
-                let type = '';
-                let found = false;
-                
-                // Fetch all orders for the current meal ID within the week
-                const ordersForMeal = await Order.find({
-                    "orderedMeals.id": id,
-                    date: {
-                        $gte: startOfWeek,
-                        $lte: endOfWeek
-                    }
-                });
-
-                // Accumulate quantities across orders
-                for (const order of ordersForMeal) {
-                    for (const orderedMeal of order.orderedMeals) {
-                        if (orderedMeal.id === id) {
-                            quantity += orderedMeal.quantity;
-                            found = true;
+        // Aggregation zum Abrufen und Auflösen der Mahlzeiten
+            // Filtern nach Bestellungen in der aktuellen Woche
+            const ordersWithMealAggregation = await Order.aggregate([
+                // Filtern nach Bestellungen in der aktuellen Woche
+                {
+                    $match: {
+                        date: {
+                            $gte: startOfCurrentWeek,
+                            $lte: endOfCurrentWeek
                         }
                     }
+                },
+                // Auflösen des Arrays 'orderedMeals'
+                {
+                    $unwind: "$orderedMeals"
+                },
+                // Projektion der relevanten Felder
+                {
+                    $project: {
+                        _id: 1, // Behalte die ursprüngliche Order _id
+                        "user-id": 1, // Behalte die user-id
+                        date: 1, // Behalte das Datum der Bestellung
+                        quantity: "$orderedMeals.quantity", // Extrahiere die Menge
+                        mealDate: "$orderedMeals.date", // Extrahiere das Datum der Mahlzeit
+                        mealDay: "$orderedMeals.day", // Extrahiere den Tag der Mahlzeit
+                        mealId: "$orderedMeals.mealId" // Extrahiere die mealId
+                    }
+                },
+                // Join (Populatieren) der Mahlzeitdetails
+                {
+                    $lookup: {
+                        from: "meals", // Die Kollektion mit Mahlzeitdetails
+                        foreignField: "_id", // Feld in der 'meals'-Kollektion, auf das verwiesen wird
+                        localField: "mealId", // Das Feld in den extrahierten Daten, das referenziert
+                        as: "mealDetails" // Neuer Name für das Feld, das die Mahlzeitdetails enthält
+                    }
+                },
+                // Entpacken des Arrays 'mealDetails', da $lookup ein Array zurückgibt
+                {
+                    $unwind: "$mealDetails"
+                },
+                // Gruppieren nach Mahlzeit und Aggregieren der Menge und des Gesamtpreises
+                {
+                    $group: {
+                        _id: "$mealId", // Gruppieren nach Mahlzeit-ID
+                        totalQuantity: { $sum: "$quantity" }, // Gesamte Menge für jede Mahlzeit
+                        totalPrice: { $sum: { $multiply: ["$quantity", "$mealDetails.price"] } }, // Gesamtpreis für jede Mahlzeit
+                        mealName: { $first: "$mealDetails.Name" }, // Den Namen der Mahlzeit übernehmen
+                        mealDescription: { $first: "$mealDetails.Beschreibung" }, // Die Beschreibung der Mahlzeit übernehmen
+                        mealType: { $first: "$mealDetails.type" }, // Den Typ der Mahlzeit übernehmen
+                        mealImage: { $first: "$mealDetails.link_fur_image" } // Das Bild der Mahlzeit übernehmen
+                    }
+                },
+                // Umbenennen des '_id'-Felds in 'mealId'
+                {
+                    $project: {
+                        _id: 0, // Verwirf das ursprüngliche _id-Feld
+                        mealId: "$_id", // Benenne das _id-Feld in mealId um
+                        totalQuantity: 1, // Behalte die Gesamtsumme
+                        totalPrice: 1, // Behalte den Gesamtpreis
+                        mealName: 1, // Behalte den Namen der Mahlzeit
+                        mealDescription: 1, // Behalte die Beschreibung der Mahlzeit
+                        mealType: 1, // Behalte den Typ der Mahlzeit
+                        mealImage: 1 // Behalte den Link zum Bild der Mahlzeit
+                    }
                 }
-
-                // Fetch meal details
-                const meal = await Meals.findOne({ 'id': id }); 
-                if (meal && found) {
-                    price = (quantity * meal.price).toFixed(2);
-                   
-                    url = meal.link_fur_image; 
-                    name = meal.Name;
-                    beschreibung = meal.Beschreibung; 
-                    type = meal.type;
-                    processedOrders.push({
-                        id: id,
-                        anzahl: quantity,
-                        price,
-                        url,
-                        name,
-                        Beschreibung: beschreibung,
-                        type
-                    });
-                    processedMealIds.add(id); // Add the processed meal ID to the set
-                }
-            }
-        }
-        return NextResponse.json({ status: 200, orders: processedOrders });
+            ]);
+            
+            console.log(ordersWithMealAggregation);
+            
+        return NextResponse.json({ status: 200, orders: ordersWithMealAggregation });
     } catch (error) {
         console.error("Error retrieving orders:", error);
         return NextResponse.json({ status: 500, message: "Internal Server Error" });
