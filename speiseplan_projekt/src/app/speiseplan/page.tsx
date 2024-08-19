@@ -72,7 +72,9 @@ export default function Speiseplan() {
         body: JSON.stringify({ date }),
       });
       const data = await res.json();
-      setMenuData(data.flat());
+      if (data.message != "Plan not found") {
+        setMenuData(data.flat());
+      }
     } catch (error) {
       console.error(error);
     }
