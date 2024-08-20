@@ -8,7 +8,6 @@ import { getWeek, startOfWeek, endOfWeek } from 'date-fns';
 
 export async function GET(req, res) {
     try {
-        // Benutzer-Authentifizierung überprüfen
         const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ status: 401, message: "Unauthorized" });
@@ -21,14 +20,11 @@ export async function GET(req, res) {
 
         await connectMongoDB();
 
-        // Berechnung des Datumsbereichs für die aktuelle Woche
         const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
         const endOfCurrentWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
-
-        // Aggregation zum Abrufen und Auflösen der Mahlzeiten
-            // Filtern nach Bestellungen in der aktuellen Woche
+        /*  Query to Aggregate of the Meals that were ordered this week
+            (for the next Week) */
             const ordersWithMealAggregation = await Order.aggregate([
-                // Filtern nach Bestellungen in der aktuellen Woche
                 {
                     $match: {
                         date: {
@@ -37,63 +33,57 @@ export async function GET(req, res) {
                         }
                     }
                 },
-                // Auflösen des Arrays 'orderedMeals'
                 {
                     $unwind: "$orderedMeals"
                 },
-                // Projektion der relevanten Felder
                 {
                     $project: {
-                        _id: 1, // Behalte die ursprüngliche Order _id
-                        "user-id": 1, // Behalte die user-id
-                        date: 1, // Behalte das Datum der Bestellung
-                        quantity: "$orderedMeals.quantity", // Extrahiere die Menge
-                        mealDate: "$orderedMeals.date", // Extrahiere das Datum der Mahlzeit
-                        mealDay: "$orderedMeals.day", // Extrahiere den Tag der Mahlzeit
-                        mealId: "$orderedMeals.mealId" // Extrahiere die mealId
+                        _id: 1, 
+                        "user-id": 1, 
+                        date: 1, 
+                        quantity: "$orderedMeals.quantity",
+                        mealDate: "$orderedMeals.date", 
+                        mealDay: "$orderedMeals.day", 
+                        mealId: "$orderedMeals.mealId"
                     }
                 },
-                // Join (Populatieren) der Mahlzeitdetails
+                // Join the meals
                 {
                     $lookup: {
-                        from: "meals", // Die Kollektion mit Mahlzeitdetails
-                        foreignField: "_id", // Feld in der 'meals'-Kollektion, auf das verwiesen wird
-                        localField: "mealId", // Das Feld in den extrahierten Daten, das referenziert
-                        as: "mealDetails" // Neuer Name für das Feld, das die Mahlzeitdetails enthält
+                        from: "meals", 
+                        foreignField: "_id", 
+                        localField: "mealId",
+                        as: "mealDetails"  
                     }
                 },
-                // Entpacken des Arrays 'mealDetails', da $lookup ein Array zurückgibt
                 {
                     $unwind: "$mealDetails"
                 },
-                // Gruppieren nach Mahlzeit und Aggregieren der Menge und des Gesamtpreises
+                /* group the meals with the mealId */
                 {
                     $group: {
-                        _id: "$mealId", // Gruppieren nach Mahlzeit-ID
-                        totalQuantity: { $sum: "$quantity" }, // Gesamte Menge für jede Mahlzeit
-                        totalPrice: { $sum: { $multiply: ["$quantity", "$mealDetails.price"] } }, // Gesamtpreis für jede Mahlzeit
-                        mealName: { $first: "$mealDetails.Name" }, // Den Namen der Mahlzeit übernehmen
-                        mealDescription: { $first: "$mealDetails.Beschreibung" }, // Die Beschreibung der Mahlzeit übernehmen
-                        mealType: { $first: "$mealDetails.type" }, // Den Typ der Mahlzeit übernehmen
-                        mealImage: { $first: "$mealDetails.link_fur_image" } // Das Bild der Mahlzeit übernehmen
+                        _id: "$mealId", 
+                        totalQuantity: { $sum: "$quantity" }, 
+                        totalPrice: { $sum: { $multiply: ["$quantity", "$mealDetails.price"] } }, 
+                        mealName: { $first: "$mealDetails.Name" }, 
+                        mealDescription: { $first: "$mealDetails.Beschreibung" }, 
+                        mealType: { $first: "$mealDetails.type" },
+                        mealImage: { $first: "$mealDetails.link_fur_image" } 
                     }
                 },
-                // Umbenennen des '_id'-Felds in 'mealId'
                 {
                     $project: {
-                        _id: 0, // Verwirf das ursprüngliche _id-Feld
-                        mealId: "$_id", // Benenne das _id-Feld in mealId um
-                        totalQuantity: 1, // Behalte die Gesamtsumme
-                        totalPrice: 1, // Behalte den Gesamtpreis
-                        mealName: 1, // Behalte den Namen der Mahlzeit
-                        mealDescription: 1, // Behalte die Beschreibung der Mahlzeit
-                        mealType: 1, // Behalte den Typ der Mahlzeit
-                        mealImage: 1 // Behalte den Link zum Bild der Mahlzeit
+                        _id: 0, 
+                        mealId: "$_id",
+                        totalQuantity: 1, 
+                        totalPrice: 1, 
+                        mealName: 1,
+                        mealDescription: 1, 
+                        mealType: 1,
+                        mealImage: 1 
                     }
                 }
             ]);
-            
-            console.log(ordersWithMealAggregation);
             
         return NextResponse.json({ status: 200, orders: ordersWithMealAggregation });
     } catch (error) {

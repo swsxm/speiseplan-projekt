@@ -11,7 +11,7 @@ const orderSchema = new Schema({
     },
     "orderedMeals": [{
         mealId: {
-            type: Schema.Types.ObjectId, // Referenziert das Meal-Schema
+            type: Schema.Types.ObjectId, 
             ref: 'meals',
 
         },
