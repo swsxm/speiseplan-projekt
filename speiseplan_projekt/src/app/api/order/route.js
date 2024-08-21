@@ -15,13 +15,10 @@ function getWeekNumber(date) {
 
 export async function POST(req) {
     try {
-        // Extract the token from the request
         const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ status: 401, message: "Unauthorized" });
         }
-
-        // Verify the token and extract user information
         const payload = await verifyAuth(token);
 
         // Extract required information from the request

@@ -1,5 +1,7 @@
 /* This file provides functions for validation */
 
+const MIN_LENGTH = 1
+const MAX_LENGTH = 255
 /**
  * Checks the Length
  */
@@ -45,7 +47,7 @@ export function validateEmail(email) {
     const min = 5;
     const isEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Regex for valid email addresses
 
-    const lengthError = checkLength(email, min, MAX_LENGTH);
+    const lengthError = validateLength(email, min, MAX_LENGTH);
     if (lengthError) return `Email ${lengthError}`;
 
     if (!isEmail.test(email)) return 'The email address is invalid.';

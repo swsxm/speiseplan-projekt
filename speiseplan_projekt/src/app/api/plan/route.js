@@ -14,14 +14,8 @@ export async function POST(req) {
         const date = new Date(dateString);
         // Calculate week number and year from the provided date
         const weekNumber = getWeekNumber(date);
-        const year = date.getFullYear();
         const dayNumber = date.getDay();
 
-        console.log("Week of the year:", weekNumber);
-        console.log("Year:", year);
-        console.log("Day of the week:", dayNumber);
-        console.log(weekNumber)
-        console.log(dayNumber)
         // Find the plan for the given week and day
         const plan = await Plan.findOne({ "week-id": weekNumber, "day-number": dayNumber }).populate('meal-ids').exec();
         if (!plan) {

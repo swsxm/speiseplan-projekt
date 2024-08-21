@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import Users from "@/models/users";
 import bcrypt from "bcryptjs";
-import { checkLength, validateNumber, validateEmail } from "../../../lib/validationHelpers";
+import { validateLength, validateNumber, validateEmail } from "../../../lib/validationHelpers";
 
 // Constants for minimum and maximum lengths
 const MIN_LENGTH = 1;
@@ -19,7 +19,7 @@ function validatePassword(password) {
     const hasLowerCase = /[a-z]/; 
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/; 
 
-    const lengthError = checkLength(password, min, max);
+    const lengthError = validateLength(password, min, max);
     if (lengthError) return `Password ${lengthError}`;
 
     if (!hasNumber.test(password)) return 'Password must contain at least one number.';
@@ -36,7 +36,7 @@ function validatePassword(password) {
 function validateName(name) {
     const isName = /^[A-Za-zÄÖÜäöüß]+(?: [A-Za-zÄÖÜäöüß]+)*$/; // Regex for names with optional last name
 
-    const lengthError = checkLength(name, MIN_LENGTH, MAX_LENGTH);
+    const lengthError = validateLength(name, MIN_LENGTH, MAX_LENGTH);
     if (lengthError) return `Name ${lengthError}`;
 
     if (!isName.test(name)) return 'The name must be alphanumeric and may include up to a first and last name.';

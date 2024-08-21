@@ -5,6 +5,14 @@ import { getISOWeek } from 'date-fns';
 
 export async function POST(req) {
     try {
+        const token = req.cookies.get('token')?.value;
+        if (!token) {
+            return NextResponse.json({ status: 401, message: "Unauthorized" });
+        }
+        const payload = await verifyAuth(token);
+        if(payload.admin == false){
+            return NextResponse.json({ status: 403, message: "Not an admin" });
+        }
         await connectMongoDB();
 
         const currentDate = new Date();

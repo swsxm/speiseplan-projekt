@@ -13,7 +13,6 @@ export async function POST(req) {
             return NextResponse.json({ status: 401, message: "Unauthorized" });
         }
 
-        // Authroization 
         const payload = await verifyAuth(token);
         if (!payload.admin) {
             return NextResponse.json({ status: 403, message: "Not an admin" });
