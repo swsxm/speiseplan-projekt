@@ -5,20 +5,15 @@ import { verifyAuth } from "@/lib/verifyToken";
 
 export async function POST(req) {
     try {
-        // Token aus der Anfrage extrahieren
         const token = req.cookies.get('token')?.value;
         if (!token) {
             return NextResponse.json({ status: 401, message: "Unauthorized" });
         }
-        // Token verifizieren und prüfen ob Admin
         const payload = await verifyAuth(token);
         if(payload.admin == false){
             return NextResponse.json({ status: 403, message: "Not an admin" });
         }
-        // Extrahiere erforderliche Informationen aus der Anfrage
         const   data  = await req.json();
-        console.log(data);
-        // Stelle eine Verbindung zur MongoDB her
         await connectMongoDB();
 
         const highestIdMeal = await Meal.findOne().sort({ id: -1 });
@@ -34,7 +29,6 @@ export async function POST(req) {
         });
 
         await newMeal.save();
-        // Erfolgsmeldung zurückgeben
         return NextResponse.json({ status: 201, message: "Meal created successfully" });
     } catch (error) {
         console.error("Error creating order:", error);
