@@ -31,8 +31,6 @@ export async function POST(req) {
         // Connect to MongoDB
         await connectMongoDB();
 
-        // Validate if the items can be ordered on the specified days
-        console.log('hier bitte', ordered_meals_id)
         // Create the order in the database
         await Order.create({
             "user-id": payload.id,

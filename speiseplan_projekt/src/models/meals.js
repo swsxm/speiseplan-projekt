@@ -1,10 +1,6 @@
 import mongoose, {Schema} from "mongoose";
 
 const mealSchema = new Schema({
-    id: {
-        type: Number,
-        required: true,
-    },
     Name: {
         type: String,
         required: true,
@@ -26,7 +22,6 @@ const mealSchema = new Schema({
         required: true,
     }
 });
-
 
 const Meal = mongoose.models.Meal || mongoose.model("Meal", mealSchema);
 export default Meal;

@@ -2,7 +2,42 @@ import { NextResponse } from "next/server";
 import Meal from "@/models/meals"
 import { connectMongoDB } from "@/lib/mongodb";
 import { verifyAuth } from "@/lib/verifyToken";
+import { validateLength, validateFloat, validateUrl } from "../../../lib/validationHelpers";
 
+/**
+ * Validate the Menu Type
+ */
+
+function validateType(type) {
+    const validTypes = ['Menu1', 'Menu2', 'Suppe', 'Nachtisch']
+    if (validTypes.includes(type)) {
+        return null;
+    }
+    return 'Type is not valid'
+}
+
+/**
+ * Helper function to give back an error
+ */
+async function handleValidationErrors(mealName, mealDescription, mealUrl, mealType, mealPrice) {
+    const errors = {
+        description: validateLength(mealDescription, 1, 255),
+        type: validateType(mealType),
+        url: validateUrl(mealUrl),
+        name: validateLength(mealName, 1, 64),
+        price: validateFloat(mealPrice, 1, 8),
+    };
+
+    for (const [field, error] of Object.entries(errors)) {
+        if (error) return { status: 400, error: error };
+    }
+    return null;
+}
+
+/**
+ * This function takes a post request and validates if the
+ * request to create a meal is legit
+ */
 export async function POST(req) {
     try {
         const token = req.cookies.get('token')?.value;
@@ -13,19 +48,27 @@ export async function POST(req) {
         if(payload.admin == false){
             return NextResponse.json({ status: 403, message: "Not an admin" });
         }
-        const   data  = await req.json();
-        await connectMongoDB();
+        const data = await req.json();
+        const mealName = data.newMeal.Name
+        const mealDescription = data.newMeal.Beschreibung
+        const mealUrl = data.newMeal.link_fur_image
+        const mealType = data.newMeal.type
+        const mealPrice = data.newMeal.price
 
-        const highestIdMeal = await Meal.findOne().sort({ id: -1 });
-        const newId = highestIdMeal ? highestIdMeal.id + 1 : 1;
+        const validationError = await handleValidationErrors(mealName, mealDescription, mealUrl, mealType, mealPrice);
+        if (validationError) {
+            return NextResponse.json(validationError);
+        }
+
+        await connectMongoDB();
+        
 
         const newMeal = new Meal({
-            id: newId,
-            Name: data.newMeal.Name,
-            Beschreibung: data.newMeal.Beschreibung,
-            link_fur_image: data.newMeal.link_fur_image,
-            type: data.newMeal.type,
-            price: data.newMeal.price
+            Name: mealName,
+            Beschreibung: mealDescription,
+            link_fur_image: mealUrl,
+            type: mealType,
+            price: mealPrice 
         });
 
         await newMeal.save();
