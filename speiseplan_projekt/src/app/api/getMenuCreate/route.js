@@ -1,19 +1,14 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import Meals from "@/models/meals";
 import Plans from "@/models/plans";
-import mongoose from 'mongoose';
 import { getWeek } from 'date-fns';
+import { verifyAdmin }from "../../../lib/verifyToken"
 
 export async function POST(req) {
     try {
-        const token = req.cookies.get('token')?.value;
-        if (!token) {
-            return NextResponse.json({ status: 401, message: "Unauthorized" });
-        }
-        const payload = await verifyAuth(token);
-        if(payload.admin == false){
-            return NextResponse.json({ status: 403, message: "Not an admin" });
+        const check = await verifyAdmin(req)
+        if (check instanceof NextResponse) {
+            return check
         }
 
         await connectMongoDB();

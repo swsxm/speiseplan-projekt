@@ -1,21 +1,14 @@
 import { connectMongoDB } from "@/lib/mongodb";
 import Order from "@/models/orders";
-import Meal from "@/models/meals";
-import { verifyAuth } from "@/lib/verifyToken";
 import { NextResponse } from "next/server";
-import { getWeek, startOfWeek, endOfWeek } from 'date-fns';
-
+import { startOfWeek, endOfWeek } from 'date-fns';
+import { verifyAdmin }from "../../../lib/verifyToken"
 
 export async function GET(req, res) {
     try {
-        const token = req.cookies.get('token')?.value;
-        if (!token) {
-            return NextResponse.json({ status: 401, message: "Unauthorized" });
-        }
-
-        const payload = await verifyAuth(token);
-        if (!payload.admin) {
-            return NextResponse.json({ status: 403, message: "Forbidden" });
+        const check = await verifyAdmin(req)
+        if (check instanceof NextResponse) {
+            return check
         }
 
         await connectMongoDB();

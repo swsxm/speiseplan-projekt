@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import Meal from "@/models/meals"
 import { connectMongoDB } from "@/lib/mongodb";
-import { verifyAuth } from "@/lib/verifyToken";
 import { validateLength, validateFloat, validateUrl } from "../../../lib/validationHelpers";
-
+import { verifyAdmin }from "../../../lib/verifyToken"
 /**
  * Validate the Menu Type
  */
@@ -40,14 +39,12 @@ async function handleValidationErrors(mealName, mealDescription, mealUrl, mealTy
  */
 export async function POST(req) {
     try {
-        const token = req.cookies.get('token')?.value;
-        if (!token) {
-            return NextResponse.json({ status: 401, message: "Unauthorized" });
+        
+        const check = await verifyAdmin(req)
+        if (check instanceof NextResponse) {
+            return check
         }
-        const payload = await verifyAuth(token);
-        if(payload.admin == false){
-            return NextResponse.json({ status: 403, message: "Not an admin" });
-        }
+
         const data = await req.json();
         const mealName = data.newMeal.Name
         const mealDescription = data.newMeal.Beschreibung
