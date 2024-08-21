@@ -12,7 +12,7 @@ interface UserJwtPayload extends JWTPayload {
 /**
  * Return the JWT Secret
  */
-export const getJwtSecretKey = () => {
+export function getJwtSecretKey() {
     const secret = process.env.TOKEN_SECRET;
 
     if (!secret || secret.length === 0) {
@@ -24,7 +24,7 @@ export const getJwtSecretKey = () => {
 /**
  * Verification of the JWT Token 
  */
-export const verifyAuth = async (token: string) => {
+export async function verifyAuth(token: string) {
     try {
         const verified = await jwtVerify(token, new TextEncoder().encode(getJwtSecretKey()));
         const payload = verified.payload as UserJwtPayload; 
