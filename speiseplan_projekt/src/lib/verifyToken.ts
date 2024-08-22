@@ -39,7 +39,6 @@ export async function verifyAuth(token: string) {
  */
 export async function verifyAdmin(req: NextRequest) {
     const token = req.cookies.get('token')?.value
-    console.log(token);
     if (!token) {
         return NextResponse.json({ status: 401, message: "Unauthorized" });
     }
