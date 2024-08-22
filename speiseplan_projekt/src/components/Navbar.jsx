@@ -12,14 +12,17 @@ export default function Navbar() {
   const Router = useRouter();
 
   useEffect(() => {
+    // Read the cookie value once the component mounts on the client side
     const cookies = parseCookies();
     const name = cookies.name;
     if (name) {
       setUserName(name);
     }
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   const handleLinkClick = (href) => {
+    // Refresh the page
+    // Navigate to the desired href after the page is refreshed
     Router.push(href);
   };
 
