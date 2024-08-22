@@ -25,8 +25,7 @@ export default function Navbar() {
             try {
                 const res = await fetch('/api/checkAdmin');
                 const data = await res.json();
-
-                if (data.isAdmin) {
+                if (data.admin === true) {
                     setIsAdmin(true);
                 }
             } catch (err) {

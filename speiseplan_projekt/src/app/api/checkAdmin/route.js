@@ -1,17 +1,10 @@
-import { verifyAuth } from '@/lib/verifyToken';
 import { NextResponse } from 'next/server';
-
+import { verifyAdmin } from '@/lib/verifyToken';
 export async function GET(req) {
-    const token = req.cookies.get('token')?.value;
-
-    if (!token) {
-        return NextResponse.json({ isAdmin: false }, { status: 401 });
+    const check = await verifyAdmin(req)
+    if (check instanceof NextResponse){
+        return check
     }
-
-    try {
-        const verifiedToken = await verifyAuth(token);
-        return NextResponse.json({ isAdmin: verifiedToken.admin }, { status: 200 });
-    } catch (err) {
-        return NextResponse.json({ isAdmin: false }, { status: 500 });
-    }
+    const payload = check
+    return NextResponse.json(payload)
 }
