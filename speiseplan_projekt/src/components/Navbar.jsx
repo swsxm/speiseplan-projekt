@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { FaUser, FaHamburger, FaShoppingCart } from 'react-icons/fa';
@@ -10,19 +10,16 @@ export default function Navbar() {
   const [nav, setNav] = useState(false);
   const [userName, setUserName] = useState('');
   const Router = useRouter();
-  
+
   useEffect(() => {
-    // Read the cookie value once the component mounts on the client side
     const cookies = parseCookies();
     const name = cookies.name;
     if (name) {
       setUserName(name);
     }
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+  }, []);
 
   const handleLinkClick = (href) => {
-    // Refresh the page
-    // Navigate to the desired href after the page is refreshed
     Router.push(href);
   };
 
@@ -38,10 +35,10 @@ export default function Navbar() {
             <span className='font-bold font-sans text-green-500'>Kantinerado</span>
           </h1>
         </Link>
-        
       </div>
+
       {/* Login button */}
-      <Link href={"/login"}>
+      <Link href={"/profile"}> {/* Profile link */}
         <button className='bg-black text-white hidden md:flex items-center py-2 rounded-full'>
           <div className='flex items-center m-1'>
             <FaUser className="w-5 h-5"/> {userName ? userName : 'Anmelden'}
@@ -50,7 +47,6 @@ export default function Navbar() {
       </Link>
 
       {/* Mobile Menu */}
-      {/* Overlay */}
       {nav ? <div className='bg-black/80 fixed w-full h-screen z-10 top-0 left-0'></div> : ''}
 
       {/* Side drawer menu */}
@@ -61,19 +57,19 @@ export default function Navbar() {
         <nav>
           <ul className='flex flex-col p-4 text-gray-800'>
             <li className='text-xl py-4 flex'>
-            <Link href={"/profile/cart"}>
+              <Link href={"/profile/cart"}>
                 <button className='text-xl py-4 flex transparent-button'> <FaShoppingCart size={25} className='mr-4' /> Einkaufswagen</button>
-            </Link>
+              </Link>
             </li>
             <li className='text-xl py-4 flex'>
-            <Link href={"/speiseplan"}>
+              <Link href={"/speiseplan"}>
                 <button className='text-xl py-4 flex transparent-button'> <FaHamburger size={25} className='mr-4' /> Speiseplan</button>
-            </Link>
+              </Link>
             </li>
             <li className='tex-xl py-4 flex'>
-            <Link href={"/login"}>
+              <Link href={"/profile"}> {/* Profile link */}
                 <button className='text-xl py-4 flex transparent-button'><FaUser size={25} className='mr-4' /> Profil</button>
-            </Link>
+              </Link>
             </li>
             <li>
               <AiOutlineClose
