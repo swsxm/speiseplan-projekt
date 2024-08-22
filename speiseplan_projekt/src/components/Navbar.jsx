@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
-import { FaUser, FaHamburger, FaShoppingCart } from 'react-icons/fa';
+import { FaUser, FaHamburger, FaShoppingCart, FaUserShield } from 'react-icons/fa';
 import Link from "next/link";
 import { parseCookies } from 'nookies';
 import { useRouter } from 'next/navigation';
@@ -60,15 +60,6 @@ export default function Navbar() {
                 </button>
             </Link>
 
-            {/* Admin button */}
-            {isAdmin && (
-                <Link href={"/admin"}>
-                    <button className='bg-black text-white hidden md:flex items-center py-2 px-4 ml-4 rounded-full'>
-                        Admin
-                    </button>
-                </Link>
-            )}
-
             {/* Mobile Menu */}
             {nav ? <div className='bg-black/80 fixed w-full h-screen z-10 top-0 left-0'></div> : ''}
 
@@ -97,7 +88,7 @@ export default function Navbar() {
                         {isAdmin && (
                             <li className='text-xl py-4 flex'>
                                 <Link href={"/admin"}>
-                                    <button className='text-xl py-4 flex transparent-button'>Admin</button>
+                                    <button className='text-xl py-4 flex transparent-button'><FaUserShield size={25} className='mr-4' /> Admin Dashboard</button> 
                                 </Link>
                             </li>
                         )}
