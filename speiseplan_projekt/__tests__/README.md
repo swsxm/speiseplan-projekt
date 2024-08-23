@@ -68,73 +68,216 @@ This example shows how to test an API endpoint, including how to mock dependenci
 /**
  * @jest-environment node
  */
-import { GET } from './route';
-import { connectMongoDB } from "@/lib/mongodb";
+import { GET } from "@/app/api/nextWeek/route";
 import Order from "@/models/orders";
-import { verifyAuth } from "@/lib/verifyToken";
-import { NextResponse } from "next/server";
+import { verifyAdmin } from "../../../lib/verifyToken";
+import { connectMongoDB } from "@/lib/mongodb";
+import { NextResponse, NextRequest } from "next/server";
+import { startOfWeek, endOfWeek } from "date-fns";
 
-// Mocking the dependencies
-jest.mock('@/lib/mongodb', () => ({
-  connectMongoDB: jest.fn(),
+// Mock the dependencies
+jest.mock("../../../lib/verifyToken", () => ({
+  verifyAdmin: jest.fn(),
 }));
 
-jest.mock('@/models/orders', () => ({
+jest.mock("@/models/orders", () => ({
   aggregate: jest.fn(),
 }));
 
-jest.mock('@/lib/verifyToken', () => ({
-  verifyAuth: jest.fn(),
+jest.mock("@/lib/mongodb", () => ({
+  connectMongoDB: jest.fn(),
 }));
 
-jest.mock('next/server', () => ({
-  NextResponse: {
-    json: jest.fn(),
-  },
-}));
+describe("GET /api/nextWeek", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
 
-describe('GET /api/orders', () => {
-  it('should return data with status 200', async () => {
-    const mockToken = 'mock-token';
+  it("should return aggregated data with status 200", async () => {
     const mockPayload = { admin: true };
-    const mockOrders = [
+    const mockOrdersWithMealAggregation = [
       {
-        mealId: 'meal1',
-        totalQuantity: 5,
-        totalPrice: 50,
-        mealName: 'Meal 1',
-        mealDescription: 'Delicious meal 1',
-        mealType: 'Menu1',
-        mealImage: 'meal1.jpg',
+        mealId: "123",
+        totalQuantity: 10,
+        totalPrice: 100,
+        mealName: "Pizza",
+        mealDescription: "Delicious pizza",
+        mealType: "Menu1",
+        mealImage: "pizza.jpg",
       },
     ];
 
-    const mockReq = {
-      cookies: {
-        get: jest.fn().mockReturnValue({ value: mockToken }),
-      },
-    };
+    // Mock implementations
+    (verifyAdmin as jest.Mock).mockResolvedValue(mockPayload);
+    (Order.aggregate as jest.Mock).mockResolvedValue(
+      mockOrdersWithMealAggregation
+    );
+    (connectMongoDB as jest.Mock).mockResolvedValue(undefined); // Mocking connection
 
-    (verifyAuth as jest.Mock).mockResolvedValue(mockPayload);
-    (Order.aggregate as jest.Mock).mockResolvedValue(mockOrders);
-    (NextResponse.json as jest.Mock).mockReturnValue({
-      status: 200,
-      json: jest.fn().mockResolvedValue({
-        orders: mockOrders,
-      }),
+    // Create a mock NextRequest and NextResponse
+    const req = {
+      cookies: {
+        get: jest.fn().mockReturnValue({ value: "mockToken" }),
+      },
+    } as unknown as NextRequest;
+
+    const mockJsonResponse = jest
+      .fn()
+      .mockResolvedValue({ orders: mockOrdersWithMealAggregation });
+    const res = {
+      json: mockJsonResponse,
+      status: jest.fn().mockReturnThis(),
+    } as unknown as NextResponse;
+
+    // Await the GET response
+    const response = await GET(req, res);
+
+    // Extract the JSON from the response
+    const jsonResponse = await response.json();
+
+    // Perform assertions on the response data
+    expect(response.status).toBe(200);
+    expect(jsonResponse.orders).toEqual(mockOrdersWithMealAggregation);
+  });
+
+  it("should return status 500 if there is an error", async () => {
+    // Simulate an error during verification
+    (verifyAdmin as jest.Mock).mockImplementation(() => {
+      throw new Error("Verification error");
     });
 
-    const response = await GET(mockReq as any, {} as any);
-    const body = await response.json();
+    // Create a mock NextRequest and NextResponse
+    const req = {
+      cookies: {
+        get: jest.fn().mockReturnValue({ value: "mockToken" }),
+      },
+    } as unknown as NextRequest;
 
+    // Create a mock NextResponse
+    const mockJsonResponse = jest.fn();
+    const res = {
+      json: mockJsonResponse,
+      status: jest.fn().mockReturnThis(),
+    } as unknown as NextResponse;
+/**
+ * @jest-environment node
+ */
+import { GET } from "@/app/api/nextWeek/route";
+import Order from "@/models/orders";
+import { verifyAdmin } from "../../../lib/verifyToken";
+import { connectMongoDB } from "@/lib/mongodb";
+import { NextResponse, NextRequest } from "next/server";
+import { startOfWeek, endOfWeek } from "date-fns";
+
+// Mock the dependencies
+jest.mock("../../../lib/verifyToken", () => ({
+  verifyAdmin: jest.fn(),
+}));
+
+jest.mock("@/models/orders", () => ({
+  aggregate: jest.fn(),
+}));
+
+jest.mock("@/lib/mongodb", () => ({
+  connectMongoDB: jest.fn(),
+}));
+
+describe("GET /api/nextWeek", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("should return aggregated data with status 200", async () => {
+    const mockPayload = { admin: true };
+    const mockOrdersWithMealAggregation = [
+      {
+        mealId: "123",
+        totalQuantity: 10,
+        totalPrice: 100,
+        mealName: "Pizza",
+        mealDescription: "Delicious pizza",
+        mealType: "Menu1",
+        mealImage: "pizza.jpg",
+      },
+    ];
+
+    // Mock implementations
+    (verifyAdmin as jest.Mock).mockResolvedValue(mockPayload);
+    (Order.aggregate as jest.Mock).mockResolvedValue(
+      mockOrdersWithMealAggregation
+    );
+    (connectMongoDB as jest.Mock).mockResolvedValue(undefined); // Mocking connection
+
+    // Create a mock NextRequest and NextResponse
+    const req = {
+      cookies: {
+        get: jest.fn().mockReturnValue({ value: "mockToken" }),
+      },
+    } as unknown as NextRequest;
+
+    const mockJsonResponse = jest
+      .fn()
+      .mockResolvedValue({ orders: mockOrdersWithMealAggregation });
+    const res = {
+      json: mockJsonResponse,
+      status: jest.fn().mockReturnThis(),
+    } as unknown as NextResponse;
+
+    // Await the GET response
+    const response = await GET(req, res);
+
+    // Extract the JSON from the response
+    const jsonResponse = await response.json();
+
+    // Perform assertions on the response data
     expect(response.status).toBe(200);
-    expect(body.orders).toEqual(mockOrders);
-    expect(connectMongoDB).toHaveBeenCalled();
-    expect(verifyAuth).toHaveBeenCalledWith(mockToken);
-    expect(Order.aggregate).toHaveBeenCalled();
-    expect(NextResponse.json).toHaveBeenCalledWith({ status: 200, orders: mockOrders });
+    expect(jsonResponse.orders).toEqual(mockOrdersWithMealAggregation);
+  });
+
+  it("should return status 500 if there is an error", async () => {
+    // Simulate an error during verification
+    (verifyAdmin as jest.Mock).mockImplementation(() => {
+      throw new Error("Verification error");
+    });
+
+    // Create a mock NextRequest and NextResponse
+    const req = {
+      cookies: {
+        get: jest.fn().mockReturnValue({ value: "mockToken" }),
+      },
+    } as unknown as NextRequest;
+
+    // Create a mock NextResponse
+    const mockJsonResponse = jest.fn();
+    const res = {
+      json: mockJsonResponse,
+      status: jest.fn().mockReturnThis(),
+    } as unknown as NextResponse;
+
+    // Await the GET response
+    const response = await GET(req, res);
+
+    // Extract the JSON from the response
+    const jsonResponse = await response.json();
+
+    // Perform assertions on the response data
+    expect(response.status).toBe(500);
+    expect(jsonResponse.message).toBe("Internal Server Error");
   });
 });
+
+    // Await the GET response
+    const response = await GET(req, res);
+
+    // Extract the JSON from the response
+    const jsonResponse = await response.json();
+
+    // Perform assertions on the response data
+    expect(response.status).toBe(500);
+    expect(jsonResponse.message).toBe("Internal Server Error");
+  });
+});
+
 ```
 
 These examples should help you get started with writing and running tests in your Next.js project.
