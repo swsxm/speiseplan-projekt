@@ -1,14 +1,9 @@
-// test.tsx
 import React from 'react';
-import Modal from '@/components/Modal';
 
 export default function Test() {
   return (
-    <div>Hallo
-    
-    ne
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <h1>Test Page</h1>
     </div>
   );
-};
-
-
+}
