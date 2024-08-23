@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { showError } from '@/lib/validationHelpers';
 
 interface CreateMealModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
+/**
+ * Modal to create a new valid meal
+ */
 function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
     const [mealName, setMealName] = useState('');
     const [description, setDescription] = useState('');
@@ -18,25 +22,10 @@ function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
             setErrorMessage('Bitte füllen Sie alle erforderlichen Felder aus.');
             return;
         }
-
-        if (description.length > 100) {
-            setErrorMessage('Die Beschreibung darf maximal 100 Zeichen lang sein.');
-            return;
-        }
-        if (mealName.length > 30) {
-            setErrorMessage('Der Name darf maximal 30 Zeichen lang sein.');
-            return;
-        }
-
-        if (isNaN(parseFloat(price))) {
-            setErrorMessage('Der Preis muss eine Zahl sein.');
-            return;
-        }
-
         const newMeal = {
             Name: mealName,
             Beschreibung: description,
-            price: parseFloat(price),
+            price: price,
             link_fur_image: imageLink,
             type: type
         };
@@ -46,11 +35,13 @@ function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ newMeal}),
+                body: JSON.stringify({ newMeal }),
             });
+        
             const data = await res.json();
+            showError(data)
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
 
         setMealName('');
@@ -63,12 +54,12 @@ function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
         onClose();
     };
 
+    /**
+     * Event is triggerd on every price change (input field)
+     */
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Überprüfe, ob die eingegebene Zeichenfolge eine gültige Zahl ist
         const value = e.target.value;
-        if (/^\d*\.?\d*$/.test(value)) {
-            setPrice(value);
-        }
+        setPrice(value);
     };
 
     return (

@@ -16,6 +16,9 @@ interface MenuItem {
   date: string;
 }
 
+/**
+ * Shopping cart logic
+ */
 const Cart = () => {
   const [cartItems, setCartItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,43 +53,51 @@ const Cart = () => {
   
     loadFromLocalStorage();
   }, []);
-
-  const removeItemFromCart = (idToRemove: number) => {
-    const updatedCartItems = cartItems.filter((item: MenuItem) => item.id !== idToRemove);
-    setCartItems(updatedCartItems);
-
+  /**
+  * Removes the Item based on the Object_ID
+  */
+  const removeItemFromCart = (idToRemove: string) => {
     try {
       const rawDataFromLocalStorage = localStorage.getItem('cartItems');
       if (rawDataFromLocalStorage) {
         const rawData: MenuItem[] = JSON.parse(rawDataFromLocalStorage);
-        const updatedRawData = rawData.filter(item => item.id !== idToRemove);
+        const updatedRawData = rawData.filter(item => item._id !== idToRemove);
         localStorage.setItem('cartItems', JSON.stringify(updatedRawData));
+        window.location.reload();
       }
     } catch (error) {
       console.error('Fehler beim Parsen der Daten aus dem Local Storage:', error);
     }
   };
-
-  const increaseQuantity = (id: number) => {
+  /**
+   * Increase the quantity of the item
+   */
+  const increaseQuantity = (id: string) => {
     const updatedCartItems = cartItems.map((item: MenuItem) => {
-      if (item.id === id) {
+      if (item._id === id) {
         return { ...item, quantity: item.quantity + 1 };
       }
       return item;
     });
     setCartItems(updatedCartItems);
   };
-
-  const decreaseQuantity = (id: number) => {
+  
+  /**
+   * Decreases the quantity of the Item
+   */
+  const decreaseQuantity = (id: string) => {
     const updatedCartItems = cartItems.map((item: MenuItem) => {
-      if (item.id === id && item.quantity > 1) {
+      if (item._id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
       }
       return item;
     });
     setCartItems(updatedCartItems);
   };
-
+  
+  /**
+   * Calculates the total price of all items combined
+   */
   const calculateTotalPrice = () => {
     let totalPrice = 0;
     for (const item of cartItems) {
@@ -99,12 +110,18 @@ const Cart = () => {
     setTotalPrice(calculateTotalPrice());
   }, [cartItems]);
 
+  /**
+   * Clears the local storage, deletes the whole cart
+   */
   const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem('cartItems');
     window.location.reload();
   };
 
+  /**
+   * Created the order request
+   */
   const handleContinue = async () => {
     try {
       const ordered_meals_id = cartItems.map(item => ({
@@ -155,7 +172,7 @@ const Cart = () => {
               <main className="md:w-3/4">
                 <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
                   {cartItems.map((cartItem) => (
-                    <div key={cartItem.id}>
+                    <div key={cartItem._id}>
                       <div className="flex items-center border-b border-gray-200 py-4">
                         <div className="flex-none w-24 mr-4">
                           <img src={cartItem.link_fur_image} alt={cartItem.Name} className="w-full" />
@@ -163,15 +180,15 @@ const Cart = () => {
                         <div className="flex-grow">
                           <h3 className="font-semibold">{cartItem.Name}</h3>
                           <div className="flex items-center mt-2">
-                            <button onClick={() => decreaseQuantity(cartItem.id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md mr-2">-</button>
+                            <button onClick={() => decreaseQuantity(cartItem._id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md mr-2">-</button>
                             <span>{cartItem.quantity}</span>
-                            <button onClick={() => increaseQuantity(cartItem.id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md ml-2">+</button>
+                            <button onClick={() => increaseQuantity(cartItem._id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md ml-2">+</button>
                           </div>
                           <div>{cartItem.date}</div>
                         </div>
                         <div className="flex-none">
                           <p className="font-semibold">{(cartItem.price * cartItem.quantity).toFixed(2)} €</p>
-                          <button onClick={() => removeItemFromCart(cartItem.id)} className="text-red-500">Löschen</button>
+                          <button onClick={() => removeItemFromCart(cartItem._id)} className="text-red-500">Löschen</button>
                         </div>
                       </div>
                     </div>

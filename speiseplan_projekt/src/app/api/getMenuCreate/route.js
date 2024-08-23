@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import Meals from "@/models/meals";
 import Plans from "@/models/plans";
-import mongoose from 'mongoose';
 import { getWeek } from 'date-fns';
+import { verifyAdmin }from "../../../lib/verifyToken"
 
 export async function POST(req) {
     try {
+        const check = await verifyAdmin(req)
+        if (check instanceof NextResponse) {
+            return check
+        }
+
         await connectMongoDB();
 
         // Extract date and type from request

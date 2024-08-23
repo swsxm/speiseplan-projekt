@@ -2,9 +2,15 @@ import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import Plan from "@/models/plans";
 import { getISOWeek } from 'date-fns';
+import { verifyAdmin }from "../../../lib/verifyToken"
 
 export async function POST(req) {
     try {
+        const check = await verifyAdmin(req)
+        if (check instanceof NextResponse) {
+            return check
+        }
+
         await connectMongoDB();
 
         const currentDate = new Date();

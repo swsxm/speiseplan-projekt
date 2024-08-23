@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import Order from "@/models/orders";
-import Meal from "@/models/plans";
-import { verifyAuth } from "@/lib/verifyToken";
+import { verifyUser }from "../../../lib/verifyToken"
 
 // Function to calculate the week number for a given date
 function getWeekNumber(date) {
@@ -15,14 +14,11 @@ function getWeekNumber(date) {
 
 export async function POST(req) {
     try {
-        // Extract the token from the request
-        const token = req.cookies.get('token')?.value;
-        if (!token) {
-            return NextResponse.json({ status: 401, message: "Unauthorized" });
+        const check = await verifyUser(req)
+        if (check instanceof NextResponse) {
+            return check
         }
-
-        // Verify the token and extract user information
-        const payload = await verifyAuth(token);
+        const payload = check;
 
         // Extract required information from the request
         const { ordered_meals_id } = await req.json();
@@ -31,8 +27,6 @@ export async function POST(req) {
         // Connect to MongoDB
         await connectMongoDB();
 
-        // Validate if the items can be ordered on the specified days
-        console.log('hier bitte', ordered_meals_id)
         // Create the order in the database
         await Order.create({
             "user-id": payload.id,
