@@ -48,8 +48,8 @@ describe('GET /api/orders', () => {
       },
     };
 
-    (verifyAuth as jest.Mock).mockResolvedValue(mockPayload);
-    (Order.aggregate as jest.Mock).mockResolvedValue(mockOrders);
+    (verifyAuth as jest.Mock).mockResolvedValue(mockPayload); // Mocking successful auth verification
+    (Order.aggregate as jest.Mock).mockResolvedValue(mockOrders); // Mocking successful data retrieval from database
     (NextResponse.json as jest.Mock).mockReturnValue({
       status: 200,
       json: jest.fn().mockResolvedValue({
@@ -60,11 +60,12 @@ describe('GET /api/orders', () => {
     const response = await GET(mockReq as any, {} as any);
     const body = await response.json();
 
+    // Asserting the response status and body
     expect(response.status).toBe(200);
     expect(body.orders).toEqual(mockOrders);
-    expect(connectMongoDB).toHaveBeenCalled();
-    expect(verifyAuth).toHaveBeenCalledWith(mockToken);
-    expect(Order.aggregate).toHaveBeenCalled();
-    expect(NextResponse.json).toHaveBeenCalledWith({ status: 200, orders: mockOrders });
+    expect(connectMongoDB).toHaveBeenCalled(); // Checking if MongoDB connection was made
+    expect(verifyAuth).toHaveBeenCalledWith(mockToken); // Checking if auth verification was called with the correct token
+    expect(Order.aggregate).toHaveBeenCalled(); // Checking if the aggregate method was called
+    expect(NextResponse.json).toHaveBeenCalledWith({ status: 200, orders: mockOrders }); // Checking if the JSON response was called with correct data
   });
 });
