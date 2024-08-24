@@ -18,7 +18,7 @@ interface ModalProps {
   closeModal: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
+const modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
   const [itemAdded, setItemAdded] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits hinzugefügt wurde
   const [isItemInCart, setIsItemInCart] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits im Warenkorb ist
 
@@ -74,4 +74,4 @@ const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
   };
   
 
-export default Modal;
+export default modal;

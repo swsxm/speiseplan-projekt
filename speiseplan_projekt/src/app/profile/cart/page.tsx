@@ -16,10 +16,11 @@ interface MenuItem {
   date: string;
 }
 
+
+const cart = () => {
 /**
  * Shopping cart logic
  */
-const Cart = () => {
   const [cartItems, setCartItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState<number>(0);
@@ -227,4 +228,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default cart;

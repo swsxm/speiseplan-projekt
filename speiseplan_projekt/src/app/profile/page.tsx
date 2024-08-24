@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 
 
-function Profile() { 
+function profile() { 
   
   const router = useRouter();
   const [name, setName] = useState('');
@@ -31,6 +31,9 @@ function Profile() {
   }, []);
 
   const handleLogout = async () => {
+    /*
+      Trigger logout
+    */
     try {
       const response = await fetch('/api/logout', {
         method: 'POST',
@@ -77,4 +80,4 @@ function Profile() {
   );
 }
 
-export default Profile; 
+export default profile; 

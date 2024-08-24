@@ -9,7 +9,7 @@ interface CreateMealModalProps {
 /**
  * Modal to create a new valid meal
  */
-function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
+function createMealModal({ isOpen, onClose }: CreateMealModalProps) {
     const [mealName, setMealName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -135,4 +135,4 @@ function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
     );
 }
 
-export default CreateMealModal;
+export default createMealModal;

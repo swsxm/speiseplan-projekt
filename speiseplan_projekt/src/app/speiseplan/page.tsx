@@ -18,7 +18,7 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 import { format, startOfWeek, addDays, isAfter, isFriday } from 'date-fns';
 import { de } from 'date-fns/locale';
 
-export default function Speiseplan() {
+export default function speiseplan() {
   interface MenuItem {
     _id: string;
     id: number;
@@ -59,9 +59,11 @@ export default function Speiseplan() {
   const nextWeek = generateWeekDays(nextWeekStart);
 
   const selectedWeek = selectedWeekKey === "currentWeek" ? currentWeek : nextWeek;
-
-  // Load menu data for the selected date
+  
   const loadMenuData = async (date: string) => {
+  /*
+    Load menu data for selected date
+  */
     setMenuData([]);
     try {
       const res = await fetch("api/plan", {

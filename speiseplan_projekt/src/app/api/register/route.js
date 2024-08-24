@@ -8,10 +8,11 @@ import { validateLength, validateNumber, validateEmail } from "../../../lib/vali
 const MIN_LENGTH = 1;
 const MAX_LENGTH = 255;
 
+
+function validatePassword(password) {
 /**
  * Validates the password for length, numbers, uppercase letters, lowercase letters, and special characters.
  */
-function validatePassword(password) {
     const min = 8;
     const max = 30;
     const hasNumber = /\d/; 
@@ -30,10 +31,11 @@ function validatePassword(password) {
     return null;
 }
 
+
+function validateName(name) {
 /**
  * Validates the name for length and whether it is alphanumeric with optional last name.
  */
-function validateName(name) {
     const isName = /^[A-Za-zÄÖÜäöüß]+(?: [A-Za-zÄÖÜäöüß]+)*$/; // Regex for names with optional last name
 
     const lengthError = validateLength(name, MIN_LENGTH, MAX_LENGTH);
@@ -44,10 +46,11 @@ function validateName(name) {
     return null;
 }
 
+
+async function handleValidationErrors(name, email, id, password) {
 /**
  * Checks all registration values and returns the first found error.
  */
-async function handleValidationErrors(name, email, id, password) {
     const errors = {
         password: validatePassword(password),
         email: validateEmail(email),
@@ -61,11 +64,12 @@ async function handleValidationErrors(name, email, id, password) {
     return null;
 }
 
+
+export async function POST(req) {
 /**  
  * Processes the POST request for registration.
  * Validates inputs, creates the user, and saves them to the database.
  */
-export async function POST(req) {
     try {
         const { name, email, id, password } = await req.json();
         

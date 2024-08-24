@@ -2,16 +2,18 @@
 
 import { getWeek } from 'date-fns';
 
+
+export function calenderWeek(date){
 /**
  * Calculates the current calender week  
  */
-export function calenderWeek(date){
     return getWeek(new Date(date), { weekStartsOn: 1 });
 }
 
+
+export function dayOfWeek(date){
 /** 
  * Calculates the current day as a number 
  */
-export function dayOfWeek(date){
     return new Date(date).getDay();
 }
