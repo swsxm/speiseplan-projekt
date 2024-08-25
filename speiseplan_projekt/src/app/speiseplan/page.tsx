@@ -22,10 +22,10 @@ export default function speiseplan() {
   interface MenuItem {
     _id: string;
     id: number;
-    Name: string;
-    Beschreibung: string;
+    name: string;
+    description: string;
     price: number;
-    link_fur_image: string;
+    image: string;
     type: string;
     day: string;
     date: string;
@@ -166,17 +166,17 @@ export default function speiseplan() {
           <div key={index} className='relative rounded-xl'>
             <img
               className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
-              src={item.link_fur_image}
+              src={item.image}
               alt='/'
             />
             <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 text-white rounded-xl p-4 flex flex-col justify-between'>
               <div className="flex flex-col justify-between h-full">
                 <div className="flex justify-between">
-                  <p className='font-bold text-2xl'>{item.Name}</p>
+                  <p className='font-bold text-2xl'>{item.name}</p>
                   <p className='text-sm'>{item.type}</p>
                 </div>
                 <p className='text-sm px-2 text-center flex-grow flex items-center justify-center'>
-                  {item.Beschreibung}
+                  {item.description}
                 </p>
               </div>
               {selectedWeekKey === "nextWeek" && (

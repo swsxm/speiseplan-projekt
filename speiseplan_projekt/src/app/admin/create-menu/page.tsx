@@ -65,10 +65,10 @@ export default function speiseplan() {
   function convertToMenuItem (data: any[]): menuItem[]{
     return data.map(item => ({
       _id: item._id,
-      name: item.Name,
-      description: item.Beschreibung,
+      name: item.name,
+      description: item.description,
       price: item.price,
-      imageUrl: item.link_fur_image,
+      imageUrl: item.image,
       type: item.type,
     }));
   };

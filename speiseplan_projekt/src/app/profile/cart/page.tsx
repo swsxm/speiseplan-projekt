@@ -6,11 +6,11 @@ import generatePDF from "@/lib/generatePDF";
 interface MenuItem {
   _id: string;
   id: number;
-  Name: string;
-  Beschreibung: string;
+  name: string;
+  description: string;
   price: number;
   quantity: number;
-  link_fur_image: string;
+  image: string;
   type: string;
   day: string;
   date: string;
@@ -182,10 +182,10 @@ function cart() {
                     <div key={cartItem._id}>
                       <div className="flex items-center border-b border-gray-200 py-4">
                         <div className="flex-none w-24 mr-4">
-                          <img src={cartItem.link_fur_image} alt={cartItem.Name} className="w-full" />
+                          <img src={cartItem.image} alt={cartItem.name} className="w-full" />
                         </div>
                         <div className="flex-grow">
-                          <h3 className="font-semibold">{cartItem.Name}</h3>
+                          <h3 className="font-semibold">{cartItem.name}</h3>
                           <div className="flex items-center mt-2">
                             <button onClick={() => decreaseQuantity(cartItem._id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md mr-2">-</button>
                             <span>{cartItem.quantity}</span>

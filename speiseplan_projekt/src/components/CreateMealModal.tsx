@@ -23,10 +23,10 @@ function createMealModal({ isOpen, onClose }: CreateMealModalProps) {
             return;
         }
         const newMeal = {
-            Name: mealName,
-            Beschreibung: description,
+            name: mealName,
+            description: description,
             price: price,
-            link_fur_image: imageLink,
+            image: imageLink,
             type: type
         };
         try {

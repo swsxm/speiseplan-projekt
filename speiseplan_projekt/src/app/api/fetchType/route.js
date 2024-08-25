@@ -20,10 +20,10 @@ export async function POST(req) {
         // Convert data to MenuItem format
         const menuItems = mealsFromDb.map(meal => ({
             _id: meal._id.toString(),  // Convert MongoDB ObjectId to string
-            name: meal.Name,
-            description: meal.Beschreibung,
+            name: meal.name,
+            description: meal.description,
             price: meal.price,
-            imageUrl: meal.link_fur_image,
+            imageUrl: meal.image,
             type: meal.type
         }));
 
