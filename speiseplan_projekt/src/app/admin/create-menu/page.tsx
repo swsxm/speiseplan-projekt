@@ -50,8 +50,14 @@ export default function Speiseplan() {
     setIsCreateMealModalOpen(true);
   };
 
-  const closeCreateMealModal = () => {
+  const closeCreateMealModal = async () => {
     setIsCreateMealModalOpen(false);
+
+    // load the menu data
+    if (selectedType) {
+      await loadMealInDB(selectedType);  // load the saved meals
+      await loadMenuData(selectedType);  // load the new meals
+    }
   };
 
   interface MenuItem {
@@ -151,7 +157,12 @@ export default function Speiseplan() {
           selectedType,
         }),
       });
-      await loadMealInDB(item.type); // Lade die aktualisierten Menüs
+
+      // add the new item to the menuInDB state
+      setMenuInDB(prevMenu => [...prevMenu, item]);
+
+      // Load the updated menu
+      await loadMealInDB(item.type);
     } catch (error) {
       console.error('Fehler beim Hinzufügen zum Menü:', error);
     }
