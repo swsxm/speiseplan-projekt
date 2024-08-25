@@ -58,16 +58,14 @@ export default function Navbar() {
                     </div>
                 </button>
             </Link>
-
-            {/* Mobile Menu */}
-            {nav ? <div className='bg-black/80 fixed w-full h-screen z-10 top-0 left-0'></div> : ''}
-
-            {/* Side drawer menu */}
-            <div className={nav ? 'fixed top-0 left-0 w-[300px] h-screen bg-white z-10 duration-300' : 'fixed top-0 left-[-100%] w-[300px] h-screen bg-white z-10 duration-300'}>
-                <h2 className='text-2xl p-4'>
-                    <span className='font-bold text-green-500'>Kantinerado</span>
-                </h2>
-                <nav>
+            
+                {/* Mobile Menu */}
+                {nav && <div className='fixed inset-0 bg-black/80 z-20'></div>}
+                <div className={`fixed top-0 left-0 w-[300px] h-screen bg-white z-30 duration-300 transform ${nav ? 'translate-x-0' : '-translate-x-full'}`}>
+                    <h2 className='text-2xl p-4'>
+                        <span className='font-bold text-green-500'>Kantinerado</span>
+                    </h2>
+                    <nav>
                     <ul className='flex flex-col p-4 text-gray-800'>
                         <li className='text-xl py-4 flex'>
                             <Link href={"/profile/cart"}>
