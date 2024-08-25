@@ -30,7 +30,7 @@ export async function verifyAuth(token: string) {
         const payload = verified.payload as UserJwtPayload; 
         return payload;
     } catch {
-        throw new Error('Your token has expired.');
+        return false;
     }
 };
 
@@ -42,8 +42,12 @@ export async function verifyAdmin(req: NextRequest) {
     if (!token) {
         return NextResponse.json({ status: 401, message: "Unauthorized" });
     }
-
+    
     const payload = await verifyAuth(token);
+
+    if (!payload) {
+        return NextResponse.json({ status: 403, message: "Forbidden" });
+    }
     if (!payload.admin) {
         return NextResponse.json({ status: 403, message: "Forbidden" });
     }
