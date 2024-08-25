@@ -42,7 +42,7 @@ export async function verifyAdmin(req: NextRequest) {
     if (!token) {
         return NextResponse.json({ status: 401, message: "Unauthorized" });
     }
-    
+
     const payload = await verifyAuth(token);
 
     if (!payload) {
@@ -63,5 +63,8 @@ export async function verifyUser(req: NextRequest) {
         return NextResponse.json({ status: 401, message: "Unauthorized" });
     }
     const payload = await verifyAuth(token);
-    return payload
+    if (payload instanceof NextResponse) {
+        return NextResponse.json({ status: 403, message: "Forbidden"});
+    }
+    return payload;
 }

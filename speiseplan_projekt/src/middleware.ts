@@ -1,52 +1,55 @@
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
-import {verifyAuth} from '@/lib/verifyToken'
+import { verifyUser } from '@/lib/verifyToken';
+
+function isJwtPayload(result: any): result is { admin: boolean } {
+  return result && typeof result === 'object' && 'admin' in result;
+}
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
+  const verificationResult = token ? await verifyUser(request) : null;
 
-  const verifiedToken =
-      token &&
-      (await verifyAuth(token).catch((err) => {
-        console.log(err)
-      }))
+  let isAdmin = false;
+  let validToken = false;
+
+
+  if (isJwtPayload(verificationResult)) {
+    validToken = true;
+    isAdmin = verificationResult.admin;
+  }
 
   // ADMIN PAGE FILTERING
-
-  if(request.nextUrl.pathname.startsWith('/admin')) {
-    if (verifiedToken && verifiedToken.admin === true){
-      return
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (validToken && isAdmin) {
+      return NextResponse.next(); // Allow access to admin page
     }
-    else {
-      return NextResponse.redirect(new URL('/', request.url))
-    }
+    return NextResponse.redirect(new URL('/', request.url)); // Redirect to homepage if not admin
   }
 
   // LOGIN PAGE FILTERING
-
-  if(request.nextUrl.pathname.startsWith('/login') && verifiedToken && verifiedToken.admin === true){
-    return NextResponse.redirect(new URL('/admin', request.url))
-  }
-  if(request.nextUrl.pathname.startsWith('/login') && verifiedToken) {
-    return NextResponse.redirect(new URL('/profile', request.url))
-  }
-  if(request.nextUrl.pathname.startsWith('/login') && !verifiedToken){
-    return;
+  if (request.nextUrl.pathname.startsWith('/login')) {
+    if (validToken && isAdmin) {
+      return NextResponse.redirect(new URL('/admin', request.url)); // Redirect to admin if admin
+    }
+    if (validToken) {
+      return NextResponse.redirect(new URL('/profile', request.url)); // Redirect to profile if logged in
+    }
+    return NextResponse.next(); // Allow access to login page if not logged in
   }
 
   // REGISTER PAGE AUTHENTICATION
-  
-  if (request.nextUrl.pathname.startsWith('/register') && !verifiedToken) {
-    return;
-  }
-  if (request.nextUrl.pathname.startsWith('/register') && verifiedToken) {
-    return NextResponse.redirect(new URL('/profile', request.url))
+  if (request.nextUrl.pathname.startsWith('/register')) {
+    if (validToken) {
+      return NextResponse.redirect(new URL('/profile', request.url)); // Redirect to profile if logged in
+    }
+    return NextResponse.next(); // Allow access to register page if not logged in
   }
 
   // PROFILE PAGE FILTERING
-  
-  if (request.nextUrl.pathname.startsWith('/profile') && !verifiedToken) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  if (request.nextUrl.pathname.startsWith('/profile') && !validToken) {
+    return NextResponse.redirect(new URL('/login', request.url)); // Redirect to login if not logged in
   }
 
+  return NextResponse.next(); // Allow access to other pages
 }
