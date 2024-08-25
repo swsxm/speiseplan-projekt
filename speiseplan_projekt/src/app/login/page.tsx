@@ -10,7 +10,7 @@ export default function login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const Router = useRouter();
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     /*
       handle login after submit
     */

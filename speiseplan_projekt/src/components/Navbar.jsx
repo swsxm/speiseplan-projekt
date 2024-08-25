@@ -21,7 +21,7 @@ export default function navbar() {
         }
 
         // Fetch admin status from the API
-        const fetchAdminStatus = async () => {
+        async function fetchAdminStatus() {
             try {
                 const res = await fetch('/api/checkAdmin');
                 const data = await res.json();

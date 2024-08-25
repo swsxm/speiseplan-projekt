@@ -13,7 +13,10 @@ export default function registerForm() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  /**
+   * Register logic
+   */
     e.preventDefault();
     // Check password safety  
     if (!name || !email || !password || !id) {

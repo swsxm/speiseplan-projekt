@@ -17,7 +17,7 @@ interface MenuItem {
 }
 
 
-const cart = () => {
+function cart() {
 /**
  * Shopping cart logic
  */
@@ -26,7 +26,7 @@ const cart = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
   useEffect(() => {
-    const loadFromLocalStorage = () => {
+    function loadFromLocalStorage() {
       const rawDataFromLocalStorage = localStorage.getItem("cartItems");
       if (!rawDataFromLocalStorage) {
         console.warn("Keine Elemente im Local Storage gefunden");
@@ -54,10 +54,11 @@ const cart = () => {
   
     loadFromLocalStorage();
   }, []);
+  
+  function removeItemFromCart(idToRemove: string) {
   /**
   * Removes the Item based on the Object_ID
   */
-  const removeItemFromCart = (idToRemove: string) => {
     try {
       const rawDataFromLocalStorage = localStorage.getItem('cartItems');
       if (rawDataFromLocalStorage) {
@@ -70,10 +71,11 @@ const cart = () => {
       console.error('Fehler beim Parsen der Daten aus dem Local Storage:', error);
     }
   };
+  
+  function increaseQuantity(id: string) {
   /**
    * Increase the quantity of the item
    */
-  const increaseQuantity = (id: string) => {
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id) {
         return { ...item, quantity: item.quantity + 1 };
@@ -83,10 +85,11 @@ const cart = () => {
     setCartItems(updatedCartItems);
   };
   
+  
+  function decreaseQuantity(id: string) {
   /**
    * Decreases the quantity of the Item
    */
-  const decreaseQuantity = (id: string) => {
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
@@ -96,10 +99,11 @@ const cart = () => {
     setCartItems(updatedCartItems);
   };
   
-  /**
+ 
+  function calculateTotalPrice() {
+   /**
    * Calculates the total price of all items combined
    */
-  const calculateTotalPrice = () => {
     let totalPrice = 0;
     for (const item of cartItems) {
       totalPrice += item.price * item.quantity;
@@ -111,19 +115,21 @@ const cart = () => {
     setTotalPrice(calculateTotalPrice());
   }, [cartItems]);
 
+  
+  function clearCart() {
   /**
    * Clears the local storage, deletes the whole cart
    */
-  const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem('cartItems');
     window.location.reload();
   };
 
+  
+  async function handleContinue() {
   /**
    * Created the order request
    */
-  const handleContinue = async () => {
     try {
       const ordered_meals_id = cartItems.map(item => ({
         quantity: item.quantity,

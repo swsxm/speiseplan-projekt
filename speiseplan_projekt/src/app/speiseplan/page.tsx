@@ -44,8 +44,10 @@ export default function speiseplan() {
   const currentWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const nextWeekStart = addDays(currentWeekStart, 7);
 
-  // Generate weekdays and dates for current and next weeks
-  const generateWeekDays = (weekStart: Date) => {
+  function generateWeekDays(weekStart: Date) {
+  /**
+   * Generate weekdays and dates for current and next weeks
+   */
     return Array.from({ length: 6 }, (_, i) => {
       const day = addDays(weekStart, i);
       return {
@@ -59,8 +61,8 @@ export default function speiseplan() {
   const nextWeek = generateWeekDays(nextWeekStart);
 
   const selectedWeek = selectedWeekKey === "currentWeek" ? currentWeek : nextWeek;
-  
-  const loadMenuData = async (date: string) => {
+
+  async function loadMenuData(date: string){
   /*
     Load menu data for selected date
   */
@@ -89,14 +91,14 @@ export default function speiseplan() {
     }
   }, [selectedTag, selectedWeekKey]);
 
-  const openModal = (item: MenuItem) => {
+  function openModal(item: MenuItem) {
     item.day = selectedTag;
     item.date = selectedWeek.find(day => day.weekday === selectedTag)?.date || '';
     setSelectedItem(item);
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
+  function closeModal () {
     setIsModalOpen(false);
   };
 

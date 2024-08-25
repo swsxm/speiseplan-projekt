@@ -22,7 +22,7 @@ const modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
   const [itemAdded, setItemAdded] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits hinzugefügt wurde
   const [isItemInCart, setIsItemInCart] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits im Warenkorb ist
 
-  const addToCart = () => {
+  function addToCart() {
     if (param1) {
       // Erstelle eine Kopie von param1 mit quantity: 1
       const itemWithQuantity: MenuItem = { ...param1, quantity: 1 };

@@ -33,7 +33,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
     ])
   ];
 
-  const drawTable = (table, startX, startY, cellPadding) => {
+  function drawTable(table, startX, startY, cellPadding) {
     const fontSize = 10;
     const lineHeight = fontSize + cellPadding * 2;
     const columnWidths = calculateColumnWidths(table, fontSize);
@@ -50,7 +50,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
     return y - 30;
   };
 
-  const calculateColumnWidths = (table, fontSize) => {
+  function calculateColumnWidths(table, fontSize) {
     const columnWidths = Array(table[0].length).fill(0);
     for (let i = 0; i < table.length; i++) {
       const row = table[i];
@@ -62,11 +62,11 @@ import { PDFDocument, rgb } from 'pdf-lib';
     return columnWidths;
   };
 
-  const estimateTextWidth = (text, fontSize) => {
+  function estimateTextWidth(text, fontSize) {
     return text.length * fontSize * 0.6; // Schätzungsformel
   };
 
-  const getColumnXOffset = (columnIndex, columnWidths, cellPadding) => {
+  function getColumnXOffset(columnIndex, columnWidths, cellPadding) {
     let offset = 0;
     for (let i = 0; i < columnIndex; i++) {
       offset += columnWidths[i];

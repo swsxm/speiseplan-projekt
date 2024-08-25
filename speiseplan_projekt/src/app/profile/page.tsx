@@ -13,7 +13,7 @@ function profile() {
   const [personalNumber, setPersonalNumber] = useState('');
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    async function fetchUserDetails(){
       try {
         const response = await fetch('/api/profile_info', {
           method: 'GET',
@@ -30,7 +30,7 @@ function profile() {
     fetchUserDetails();
   }, []);
 
-  const handleLogout = async () => {
+  async function handleLogout(){
     /*
       Trigger logout
     */

@@ -27,7 +27,7 @@ export default function admin() {
     fetchMenuItems();
   }, []);
 
-  const fetchMenuItems = async () => {
+  async function fetchMenuItems () {
     /**
      * Fetch all orders from the database.
      */

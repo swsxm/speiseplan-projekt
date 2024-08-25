@@ -24,7 +24,7 @@ export default function speiseplan() {
   const [selectedType, setSelectedType] = useState('');
   const types = ['Menu1', 'Menu2', 'Nachtisch', 'Suppe'];
 
-  const existNewWeek = async () => {
+  async function existNewWeek() {
     /*  
       Check if the new week already exists in DB, if not create one
     */
@@ -62,7 +62,7 @@ export default function speiseplan() {
     type: string;
   }
 
-  const convertToMenuItem = (data: any[]): menuItem[] => {
+  function convertToMenuItem (data: any[]): menuItem[]{
     return data.map(item => ({
       _id: item._id,
       name: item.Name,
@@ -76,7 +76,7 @@ export default function speiseplan() {
   const [menuData, setMenuData] = useState<menuItem[]>([]);
   const [menuInDB, setMenuInDB] = useState<menuItem[]>([]);
 
-  const loadMenuData = async (type: string) => {
+  async function loadMenuData(type: string){
     try {
       const res = await fetch('../api/fetchType', {
         method: 'POST',
@@ -94,7 +94,7 @@ export default function speiseplan() {
     }
   };
 
-  const loadMealInDB = async (type: string) => {
+  async function loadMealInDB(type: string) {
     /*
       Loading the menus that are already set for the chosen day
     */
@@ -136,7 +136,7 @@ export default function speiseplan() {
     loadMealInDB(type);
   };
 
-  const handleAddToMenu = async (item: menuItem) => {
+  async function handleAddToMenu (item: menuItem) {
     /*
       Updating menuItem in db
     */
