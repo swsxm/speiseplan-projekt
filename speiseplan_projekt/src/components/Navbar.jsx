@@ -50,22 +50,24 @@ export default function Navbar() {
                 </Link>
             </div>
 
-            {/* Login button */}
+            {/* Login button - always visible, regardless of screen size */}
             <Link href={"/profile"}>
-                <button className='bg-black text-white hidden md:flex items-center py-2 rounded-full'>
+                <button className='bg-black text-white flex items-center py-2 rounded-full'>
                     <div className='flex items-center m-1'>
                         <FaUser className="w-5 h-5"/> {userName ? userName : 'Anmelden'}
                     </div>
                 </button>
             </Link>
-            
-                {/* Mobile Menu */}
-                {nav && <div className='fixed inset-0 bg-black/80 z-20'></div>}
-                <div className={`fixed top-0 left-0 w-[300px] h-screen bg-white z-30 duration-300 transform ${nav ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <h2 className='text-2xl p-4'>
-                        <span className='font-bold text-green-500'>Kantinerado</span>
-                    </h2>
-                    <nav>
+
+            {/* Mobile Menu */}
+            {nav && <div className='fixed inset-0 bg-black/80 z-20'></div>}
+
+            {/* Sidebar with increased z-index and transform classes for animation */}
+            <div className={`fixed top-0 left-0 w-[300px] h-screen bg-white z-30 duration-300 transform ${nav ? 'translate-x-0' : '-translate-x-full'}`}>
+                <h2 className='text-2xl p-4'>
+                    <span className='font-bold text-green-500'>Kantinerado</span>
+                </h2>
+                <nav>
                     <ul className='flex flex-col p-4 text-gray-800'>
                         <li className='text-xl py-4 flex'>
                             <Link href={"/profile/cart"}>
