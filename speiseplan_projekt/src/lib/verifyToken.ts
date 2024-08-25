@@ -63,7 +63,7 @@ export async function verifyUser(req: NextRequest) {
         return NextResponse.json({ status: 401, message: "Unauthorized" });
     }
     const payload = await verifyAuth(token);
-    if (payload instanceof NextResponse) {
+    if (!payload) {
         return NextResponse.json({ status: 403, message: "Forbidden"});
     }
     return payload;

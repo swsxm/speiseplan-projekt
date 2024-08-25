@@ -19,7 +19,6 @@ export async function POST(req) {
         // Find the plan for the given week and day
         const plan = await Plan.findOne({ "week-id": weekNumber, "day-number": dayNumber }).populate('meal-ids').exec();
         if (!plan) {
-            console.log('kein plan')
             return NextResponse.json({ message: "Plan not found" }, { status: 200 });
         }
 

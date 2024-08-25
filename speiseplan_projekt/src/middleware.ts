@@ -2,14 +2,22 @@ import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { verifyUser } from '@/lib/verifyToken';
 
-function isJwtPayload(result: any): result is { admin: boolean } {
-  return result && typeof result === 'object' && 'admin' in result;
+interface isAdmin {
+  admin: boolean;
+}
+
+/**
+ * This function checks if the result is not null
+ * and if it has an admin attribute, the admin attribute
+ * is than passed as the result
+ */
+function isJwtPayload(result: any): result is isAdmin {
+  return result != null && 'admin' in result;
 }
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const verificationResult = token ? await verifyUser(request) : null;
-
   let isAdmin = false;
   let validToken = false;
 
