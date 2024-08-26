@@ -50,15 +50,15 @@ export default function Speiseplan() {
     setIsCreateMealModalOpen(true);
   };
 
-  const closeCreateMealModal = async () => {
+  function closeCreateMealModal() {
     setIsCreateMealModalOpen(false);
 
     // load the menu data
     if (selectedType) {
-      await loadMealInDB(selectedType);  // load the saved meals
-      await loadMenuData(selectedType);  // load the new meals
+      loadMealInDB(selectedType);  // load the saved meals
+      loadMenuData(selectedType);  // load the new meals
     }
-  };
+  }
 
   interface MenuItem {
     _id: string;
