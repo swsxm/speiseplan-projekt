@@ -58,10 +58,10 @@ export async function GET(req, res) {
                     _id: "$mealId",
                     totalQuantity: { $sum: "$quantity" },
                     totalPrice: { $sum: { $multiply: ["$quantity", "$mealDetails.price"] } },
-                    mealName: { $first: "$mealDetails.Name" },
-                    mealDescription: { $first: "$mealDetails.Beschreibung" },
+                    mealName: { $first: "$mealDetails.name" },
+                    mealDescription: { $first: "$mealDetails.description" },
                     mealType: { $first: "$mealDetails.type" },
-                    mealImage: { $first: "$mealDetails.link_fur_image" }
+                    mealImage: { $first: "$mealDetails.image" }
                 }
             },
             {
