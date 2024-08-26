@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from "@/components/Navbar"
-export default function Test() {
+export default function Info() {
   return (
     <div>
       <Navbar/>
