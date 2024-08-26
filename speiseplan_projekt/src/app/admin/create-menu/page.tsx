@@ -116,6 +116,7 @@ export default function Speiseplan() {
         }),
       });
 
+      
       const rawData = await res.json();
       const data = convertToMenuItem(rawData);
       console.log('Gespeicherte Menüs aus der DB:', data); // Debugging: Daten aus der DB
