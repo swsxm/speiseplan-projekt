@@ -3,15 +3,6 @@ import { connectMongoDB } from "@/lib/mongodb";
 import Order from "@/models/orders";
 import { verifyUser }from "../../../lib/verifyToken"
 
-// Function to calculate the week number for a given date
-function getWeekNumber(date) {
-    const startOfYear = new Date(date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (date - startOfYear) / 86400000;
-
-    // Calculate the week number (ISO week date standard)
-    return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
-}
-
 export async function POST(req) {
     try {
         const check = await verifyUser(req)

@@ -6,29 +6,28 @@ import CreateMealModal from '@/components/CreateMealModal';
 import { FaRegPlusSquare } from "react-icons/fa";
 import { startOfWeek, addDays, format } from 'date-fns';
 
-export default function Speiseplan() {
-  // Berechne den Start der übernächsten Woche und speichere die Daten
+export default function speiseplan() {
   const currentDate = new Date();
   const startOfCurrentWeek = startOfWeek(currentDate, { weekStartsOn: 1 });
-  const startOfNewWeek = addDays(startOfCurrentWeek, 14); // Übernächste Woche
-  const NewWeek = [];
+  const startOfNewWeek = addDays(startOfCurrentWeek, 14);
+  const newWeek = [];
 
-  // Befüllen der übernächsten Woche in NewWeek
   for (let i = 0; i < 6; i++) {
     const day = addDays(startOfNewWeek, i);
     const formattedDate = format(day, 'yyyy-MM-dd');
-    NewWeek.push(formattedDate);
+    newWeek.push(formattedDate);
   }
 
-  // State-Variablen
   const [currentPath, setCurrentPath] = useState('/');
   const [isCreateMealModalOpen, setIsCreateMealModalOpen] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(NewWeek[0]);
+  const [selectedDay, setSelectedDay] = useState(newWeek[0]);
   const [selectedType, setSelectedType] = useState('');
   const types = ['Menu1', 'Menu2', 'Nachtisch', 'Suppe'];
 
-  // Überprüfen, ob die neue Woche bereits existiert, wenn nicht, erstelle sie
-  const existNewWeek = async () => {
+  async function existNewWeek() {
+    /*  
+      Check if the new week already exists in DB, if not create one
+    */
     try {
       await fetch('../api/setNewWeek', {
         method: 'POST',
@@ -54,7 +53,7 @@ export default function Speiseplan() {
     setIsCreateMealModalOpen(false);
   };
 
-  interface MenuItem {
+  interface menuItem {
     _id: string;
     name: string;
     description: string;
@@ -63,22 +62,21 @@ export default function Speiseplan() {
     type: string;
   }
 
-  const convertToMenuItem = (data: any[]): MenuItem[] => {
+  function convertToMenuItem (data: any[]): menuItem[]{
     return data.map(item => ({
       _id: item._id,
-      name: item.Name,
-      description: item.Beschreibung,
+      name: item.name,
+      description: item.description,
       price: item.price,
-      imageUrl: item.link_fur_image, // Mapping von link_fur_image auf imageUrl
+      imageUrl: item.image,
       type: item.type,
     }));
   };
 
-  const [menuData, setMenuData] = useState<MenuItem[]>([]);
-  const [menuInDB, setMenuInDB] = useState<MenuItem[]>([]);
+  const [menuData, setMenuData] = useState<menuItem[]>([]);
+  const [menuInDB, setMenuInDB] = useState<menuItem[]>([]);
 
-  // Funktion zum Laden der Menüdaten für den ausgewählten Typ
-  const loadMenuData = async (type: string) => {
+  async function loadMenuData(type: string){
     try {
       const res = await fetch('../api/fetchType', {
         method: 'POST',
@@ -88,16 +86,18 @@ export default function Speiseplan() {
         body: JSON.stringify({ type }),
       });
 
-      const data: MenuItem[] = await res.json();
-      console.log('Menü-Daten geladen:', data); // Debugging: Menü-Daten
+      const data: menuItem[] = await res.json();
+      console.log('Menü-Daten geladen:', data);
       setMenuData(data);
     } catch (error) {
       console.error('Fehler beim Laden der Menüdaten:', error);
     }
   };
 
-  // Funktion zum Laden der bereits in der DB gespeicherten Menüs für den ausgewählten Tag und Typ
-  const loadMealInDB = async (type: string) => {
+  async function loadMealInDB(type: string) {
+    /*
+      Loading the menus that are already set for the chosen day
+    */
     try {
       const res = await fetch('../api/getMenuCreate', {
         method: 'POST',
@@ -112,9 +112,8 @@ export default function Speiseplan() {
 
       const rawData = await res.json();
       const data = convertToMenuItem(rawData);
-      console.log('Gespeicherte Menüs aus der DB:', data); // Debugging: Daten aus der DB
       if (Array.isArray(data)) {
-        setMenuInDB(data); // Setze die gespeicherten Menüdaten
+        setMenuInDB(data);
       } else {
         console.error('Erwartete ein Array, erhielt aber:', data);
         setMenuInDB([]);
@@ -137,7 +136,10 @@ export default function Speiseplan() {
     loadMealInDB(type);
   };
 
-  const handleAddToMenu = async (item: MenuItem) => {
+  async function handleAddToMenu (item: menuItem) {
+    /*
+      Updating menuItem in db
+    */
     try {
       await fetch('../api/updateMenuItem', {
         method: 'POST',
@@ -151,16 +153,15 @@ export default function Speiseplan() {
           selectedType,
         }),
       });
-      await loadMealInDB(item.type); // Lade die aktualisierten Menüs
+      await loadMealInDB(item.type);
     } catch (error) {
       console.error('Fehler beim Hinzufügen zum Menü:', error);
     }
   };
 
   useEffect(() => {
-    console.log('Aktueller Wert von menuInDB:', menuInDB); // Debugging: Menü in DB
     menuInDB.forEach(item => {
-      console.log(item.imageUrl); // Zugriff auf die imageUrl-Eigenschaft
+      console.log(item.imageUrl);
     });
     if (!Array.isArray(menuInDB)) {
       console.error('menuInDB ist kein Array:', menuInDB);
@@ -170,8 +171,7 @@ export default function Speiseplan() {
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
-      
-      {/* Navigation */}
+
       <nav className="mx-auto p-4">
         <div className="flex flex-wrap items-center justify-center mx-auto p-4">
           <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
@@ -194,21 +194,17 @@ export default function Speiseplan() {
           </div>
         </div>
       </nav>
-
-      {/* Auswahl der Wochentage */}
       <div className="flex justify-center mt-4 space-x-4">
-        {NewWeek.map((day, index) => (
+        {newWeek.map((day, index) => (
           <button
             onClick={() => handleDaySelection(day)}
             key={index}
             className={`px-4 py-2 rounded-md border ${selectedDay === day ? 'bg-black text-white' : 'bg-gray-200 text-gray-700'} hover:bg-green-600 focus:outline-none`}
           >
-            {format(new Date(day), 'dd.MM')} {/* Zeigt das Datum im Format TT.MM an */}
+            {format(new Date(day), 'dd.MM')} 
           </button>
         ))}
       </div>
-
-      {/* Auswahl des Menüs */}
       <div className="flex justify-center mt-4 space-x-4">
         {types.map((type, index) => (
           <button
@@ -220,8 +216,6 @@ export default function Speiseplan() {
           </button>
         ))}
       </div>
-
-      {/* Vorhandene Menüs in der Datenbank */}
       <div className="max-w-[820px] mx-auto p-4 py-12 grid md:grid-cols-1 gap-6 justify-center">
         {menuInDB.length === 0 ? (
           <p>Keine Menüs gefunden</p>
@@ -243,8 +237,6 @@ export default function Speiseplan() {
           ))
         )}
       </div>
-
-      {/* Karten für die neuen Menüpunkte */}
       <div className="max-w-[1640px] mx-auto p-4 py-12 grid md:grid-cols-2 gap-6">
         {menuData.length === 0 ? (
           <p>Keine neuen Menüs verfügbar</p>

@@ -3,11 +3,12 @@ import Meal from "@/models/meals"
 import { connectMongoDB } from "@/lib/mongodb";
 import { validateLength, validateFloat, validateUrl } from "../../../lib/validationHelpers";
 import { verifyAdmin }from "../../../lib/verifyToken"
+
+
+function validateType(type) {
 /**
  * Validate the Menu Type
  */
-
-function validateType(type) {
     const validTypes = ['Menu1', 'Menu2', 'Suppe', 'Nachtisch']
     if (validTypes.includes(type)) {
         return null;
@@ -15,10 +16,11 @@ function validateType(type) {
     return 'Type is not valid'
 }
 
+
+async function handleValidationErrors(mealName, mealDescription, mealUrl, mealType, mealPrice) {
 /**
  * Helper function to give back an error
  */
-async function handleValidationErrors(mealName, mealDescription, mealUrl, mealType, mealPrice) {
     const errors = {
         description: validateLength(mealDescription, 1, 255),
         type: validateType(mealType),
@@ -33,11 +35,12 @@ async function handleValidationErrors(mealName, mealDescription, mealUrl, mealTy
     return null;
 }
 
+
+export async function POST(req) {
 /**
  * This function takes a post request and validates if the
  * request to create a meal is legit
  */
-export async function POST(req) {
     try {
         
         const check = await verifyAdmin(req)
@@ -46,9 +49,9 @@ export async function POST(req) {
         }
 
         const data = await req.json();
-        const mealName = data.newMeal.Name
-        const mealDescription = data.newMeal.Beschreibung
-        const mealUrl = data.newMeal.link_fur_image
+        const mealName = data.newMeal.name
+        const mealDescription = data.newMeal.description
+        const mealUrl = data.newMeal.image
         const mealType = data.newMeal.type
         const mealPrice = data.newMeal.price
 
@@ -61,9 +64,9 @@ export async function POST(req) {
         
 
         const newMeal = new Meal({
-            Name: mealName,
-            Beschreibung: mealDescription,
-            link_fur_image: mealUrl,
+            name: mealName,
+            description: mealDescription,
+            image: mealUrl,
             type: mealType,
             price: mealPrice 
         });

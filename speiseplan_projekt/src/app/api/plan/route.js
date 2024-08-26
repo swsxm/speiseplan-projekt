@@ -35,8 +35,10 @@ export async function POST(req) {
     }
 }
 
-// Function to calculate the week number from a given date
 function getWeekNumber(datum) {
+/**
+ * Calculate the week number from given date
+ */
     const target = new Date(datum.valueOf());
     const dayNumber = (datum.getDay() + 6) % 7;
     target.setDate(target.getDate() - dayNumber + 3);

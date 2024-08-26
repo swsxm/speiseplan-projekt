@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 
 
-function Profile() { 
+function profile() { 
   
   const router = useRouter();
   const [name, setName] = useState('');
@@ -13,7 +13,7 @@ function Profile() {
   const [personalNumber, setPersonalNumber] = useState('');
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    async function fetchUserDetails(){
       try {
         const response = await fetch('/api/profile_info', {
           method: 'GET',
@@ -30,7 +30,10 @@ function Profile() {
     fetchUserDetails();
   }, []);
 
-  const handleLogout = async () => {
+  async function handleLogout(){
+    /*
+      Trigger logout
+    */
     try {
       const response = await fetch('/api/logout', {
         method: 'POST',
@@ -77,4 +80,4 @@ function Profile() {
   );
 }
 
-export default Profile; 
+export default profile; 
