@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 interface MenuItem {
   _id: string;
   id: number;
-  Name: string;
-  Beschreibung: string;
+  name: string;
+  description: string;
   price: number;
-  link_fur_image: string;
+  image: string;
   type: string;
   day: string;
   date: string;
@@ -18,11 +18,11 @@ interface ModalProps {
   closeModal: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
+const modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
   const [itemAdded, setItemAdded] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits hinzugefügt wurde
   const [isItemInCart, setIsItemInCart] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits im Warenkorb ist
 
-  const addToCart = () => {
+  function addToCart() {
     if (param1) {
       // Erstelle eine Kopie von param1 mit quantity: 1
       const itemWithQuantity: MenuItem = { ...param1, quantity: 1 };
@@ -53,9 +53,9 @@ const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
         <div className="p-8 border w-96 shadow-lg rounded-md bg-white relative z-50">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900">{param1.Name}</h3>
+            <h3 className="text-2xl font-bold text-gray-900">{param1.name}</h3>
             <div className="mt-2 px-7 py-3">
-              <p className="text-lg text-gray-500">{param1.Beschreibung}</p>
+              <p className="text-lg text-gray-500">{param1.description}</p>
               <p className="text-lg text-gray-500">{param1.type}</p>
               <p className="text-lg text-gray-500">{param1.date}</p>
               <p className="text-lg text-gray-500">{param1.day}</p>
@@ -74,4 +74,4 @@ const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
   };
   
 
-export default Modal;
+export default modal;

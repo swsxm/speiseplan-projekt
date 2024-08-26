@@ -9,10 +9,11 @@ interface UserJwtPayload extends JWTPayload {
     email: string;
     employee_number: number;
 }
+
+export function getJwtSecretKey() {
 /**
  * Return the JWT Secret
  */
-export function getJwtSecretKey() {
     const secret = process.env.TOKEN_SECRET;
 
     if (!secret || secret.length === 0) {
@@ -21,43 +22,53 @@ export function getJwtSecretKey() {
     return secret;
 };
 
+
+export async function verifyAuth(token: string) {
 /**
  * Verification of the JWT Token 
  */
-export async function verifyAuth(token: string) {
     try {
         const verified = await jwtVerify(token, new TextEncoder().encode(getJwtSecretKey()));
         const payload = verified.payload as UserJwtPayload; 
         return payload;
     } catch {
-        throw new Error('Your token has expired.');
+        return false;
     }
 };
 
+
+export async function verifyAdmin(req: NextRequest) {
 /**
  * Admin Verification 
  */
-export async function verifyAdmin(req: NextRequest) {
     const token = req.cookies.get('token')?.value
     if (!token) {
         return NextResponse.json({ status: 401, message: "Unauthorized" });
     }
 
     const payload = await verifyAuth(token);
+
+    if (!payload) {
+        return NextResponse.json({ status: 403, message: "Forbidden" });
+    }
     if (!payload.admin) {
         return NextResponse.json({ status: 403, message: "Forbidden" });
     }
     return payload;
 }
 
+
+export async function verifyUser(req: NextRequest) {
 /**
  * User Verification 
  */
-export async function verifyUser(req: NextRequest) {
     const token = req.cookies.get('token')?.value
     if (!token) {
         return NextResponse.json({ status: 401, message: "Unauthorized" });
     }
     const payload = await verifyAuth(token);
-    return payload
+    if (!payload) {
+        return NextResponse.json({ status: 403, message: "Forbidden"});
+    }
+    return payload;
 }

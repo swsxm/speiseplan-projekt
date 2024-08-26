@@ -6,7 +6,7 @@ import Link from "next/link";
 import { parseCookies } from 'nookies';
 import { useRouter } from 'next/navigation';
 
-export default function Navbar() {
+export default function navbar() {
     const [nav, setNav] = useState(false);
     const [userName, setUserName] = useState('');
     const [isAdmin, setIsAdmin] = useState(false);
@@ -21,7 +21,7 @@ export default function Navbar() {
         }
 
         // Fetch admin status from the API
-        const fetchAdminStatus = async () => {
+        async function fetchAdminStatus() {
             try {
                 const res = await fetch('/api/checkAdmin');
                 const data = await res.json();

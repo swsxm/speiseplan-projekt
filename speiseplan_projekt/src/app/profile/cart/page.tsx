@@ -6,26 +6,27 @@ import generatePDF from "@/lib/generatePDF";
 interface MenuItem {
   _id: string;
   id: number;
-  Name: string;
-  Beschreibung: string;
+  name: string;
+  description: string;
   price: number;
   quantity: number;
-  link_fur_image: string;
+  image: string;
   type: string;
   day: string;
   date: string;
 }
 
+
+function cart() {
 /**
  * Shopping cart logic
  */
-const Cart = () => {
   const [cartItems, setCartItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
   useEffect(() => {
-    const loadFromLocalStorage = () => {
+    function loadFromLocalStorage() {
       const rawDataFromLocalStorage = localStorage.getItem("cartItems");
       if (!rawDataFromLocalStorage) {
         console.warn("Keine Elemente im Local Storage gefunden");
@@ -53,10 +54,11 @@ const Cart = () => {
   
     loadFromLocalStorage();
   }, []);
+  
+  function removeItemFromCart(idToRemove: string) {
   /**
   * Removes the Item based on the Object_ID
   */
-  const removeItemFromCart = (idToRemove: string) => {
     try {
       const rawDataFromLocalStorage = localStorage.getItem('cartItems');
       if (rawDataFromLocalStorage) {
@@ -69,10 +71,11 @@ const Cart = () => {
       console.error('Fehler beim Parsen der Daten aus dem Local Storage:', error);
     }
   };
+  
+  function increaseQuantity(id: string) {
   /**
    * Increase the quantity of the item
    */
-  const increaseQuantity = (id: string) => {
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id) {
         return { ...item, quantity: item.quantity + 1 };
@@ -82,10 +85,11 @@ const Cart = () => {
     setCartItems(updatedCartItems);
   };
   
+  
+  function decreaseQuantity(id: string) {
   /**
    * Decreases the quantity of the Item
    */
-  const decreaseQuantity = (id: string) => {
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
@@ -95,10 +99,11 @@ const Cart = () => {
     setCartItems(updatedCartItems);
   };
   
-  /**
+ 
+  function calculateTotalPrice() {
+   /**
    * Calculates the total price of all items combined
    */
-  const calculateTotalPrice = () => {
     let totalPrice = 0;
     for (const item of cartItems) {
       totalPrice += item.price * item.quantity;
@@ -110,19 +115,21 @@ const Cart = () => {
     setTotalPrice(calculateTotalPrice());
   }, [cartItems]);
 
+  
+  function clearCart() {
   /**
    * Clears the local storage, deletes the whole cart
    */
-  const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem('cartItems');
     window.location.reload();
   };
 
+  
+  async function handleContinue() {
   /**
    * Created the order request
    */
-  const handleContinue = async () => {
     try {
       const ordered_meals_id = cartItems.map(item => ({
         quantity: item.quantity,
@@ -175,10 +182,10 @@ const Cart = () => {
                     <div key={cartItem._id}>
                       <div className="flex items-center border-b border-gray-200 py-4">
                         <div className="flex-none w-24 mr-4">
-                          <img src={cartItem.link_fur_image} alt={cartItem.Name} className="w-full" />
+                          <img src={cartItem.image} alt={cartItem.name} className="w-full" />
                         </div>
                         <div className="flex-grow">
-                          <h3 className="font-semibold">{cartItem.Name}</h3>
+                          <h3 className="font-semibold">{cartItem.name}</h3>
                           <div className="flex items-center mt-2">
                             <button onClick={() => decreaseQuantity(cartItem._id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md mr-2">-</button>
                             <span>{cartItem.quantity}</span>
@@ -227,4 +234,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default cart;

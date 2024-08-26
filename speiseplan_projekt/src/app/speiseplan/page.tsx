@@ -18,14 +18,14 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 import { format, startOfWeek, addDays, isAfter, isFriday } from 'date-fns';
 import { de } from 'date-fns/locale';
 
-export default function Speiseplan() {
+export default function speiseplan() {
   interface MenuItem {
     _id: string;
     id: number;
-    Name: string;
-    Beschreibung: string;
+    name: string;
+    description: string;
     price: number;
-    link_fur_image: string;
+    image: string;
     type: string;
     day: string;
     date: string;
@@ -44,8 +44,10 @@ export default function Speiseplan() {
   const currentWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const nextWeekStart = addDays(currentWeekStart, 7);
 
-  // Generate weekdays and dates for current and next weeks
-  const generateWeekDays = (weekStart: Date) => {
+  function generateWeekDays(weekStart: Date) {
+  /**
+   * Generate weekdays and dates for current and next weeks
+   */
     return Array.from({ length: 6 }, (_, i) => {
       const day = addDays(weekStart, i);
       return {
@@ -60,8 +62,10 @@ export default function Speiseplan() {
 
   const selectedWeek = selectedWeekKey === "currentWeek" ? currentWeek : nextWeek;
 
-  // Load menu data for the selected date
-  const loadMenuData = async (date: string) => {
+  async function loadMenuData(date: string){
+  /*
+    Load menu data for selected date
+  */
     setMenuData([]);
     try {
       const res = await fetch("api/plan", {
@@ -87,14 +91,14 @@ export default function Speiseplan() {
     }
   }, [selectedTag, selectedWeekKey]);
 
-  const openModal = (item: MenuItem) => {
+  function openModal(item: MenuItem) {
     item.day = selectedTag;
     item.date = selectedWeek.find(day => day.weekday === selectedTag)?.date || '';
     setSelectedItem(item);
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
+  function closeModal () {
     setIsModalOpen(false);
   };
 
@@ -162,17 +166,17 @@ export default function Speiseplan() {
           <div key={index} className='relative rounded-xl'>
             <img
               className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
-              src={item.link_fur_image}
+              src={item.image}
               alt='/'
             />
             <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 text-white rounded-xl p-4 flex flex-col justify-between'>
               <div className="flex flex-col justify-between h-full">
                 <div className="flex justify-between">
-                  <p className='font-bold text-2xl'>{item.Name}</p>
+                  <p className='font-bold text-2xl'>{item.name}</p>
                   <p className='text-sm'>{item.type}</p>
                 </div>
                 <p className='text-sm px-2 text-center flex-grow flex items-center justify-center'>
-                  {item.Beschreibung}
+                  {item.description}
                 </p>
               </div>
               {selectedWeekKey === "nextWeek" && (

@@ -14,7 +14,7 @@ interface Menu {
   totalPrice: number;
 }
 
-export default function Admin() {
+export default function admin() {
   const [currentPath, setCurrentPath] = useState('/');
   const [menuItems, setMenuItems] = useState<Menu[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -27,7 +27,10 @@ export default function Admin() {
     fetchMenuItems();
   }, []);
 
-  const fetchMenuItems = async () => {
+  async function fetchMenuItems () {
+    /**
+     * Fetch all orders from the database.
+     */
     try {
       const response = await fetch('/api/nextWeek');
       if (response.ok) {
@@ -35,27 +38,27 @@ export default function Admin() {
         if (data.orders) {
           setMenuItems(data.orders);
         } else {
-          setError('No orders found');
+          setError('Keine Bestellungen gefunden');
         }
       } else {
-        setError('Failed to fetch menu items');
+        setError('Fehler beim Abrufen der Menüpunkte');
       }
     } catch (error) {
-      setError('Error fetching menu items');
+      setError('Fehler beim Abrufen der Menüpunkte');
       console.error('Error fetching menu items:', error);
     }
   };
 
   useEffect(() => {
-    let totalPrice = 0;
-    let totalAmount = 0;
+    let calculatedTotalPrice = 0;
+    let calculatedTotalAmount = 0;
     menuItems.forEach((item) => {
-      totalPrice += item.totalPrice;
-      totalAmount += item.totalQuantity;
+      calculatedTotalPrice += item.totalPrice;
+      calculatedTotalAmount += item.totalQuantity;
     });
-    console.log(menuItems)
-    setTotalPrice(totalPrice);
-    setTotalAmount(totalAmount);
+    console.log(menuItems);
+    setTotalPrice(calculatedTotalPrice);
+    setTotalAmount(calculatedTotalAmount);
   }, [menuItems]);
 
   const openCreateMealModal = () => {
@@ -87,7 +90,7 @@ export default function Admin() {
                 </li>
                 <li>
                   <a href="/admin/create-menu" className={`block py-2 px-3 rounded hover:text-dark-green-500 md:bg-transparent md:p-0 ${currentPath === '/admin/create-menu' ? 'text-green-500' : 'text-black'}`}>
-                    Menu erstellen
+                    Menü erstellen
                   </a>
                 </li>
               </ul>

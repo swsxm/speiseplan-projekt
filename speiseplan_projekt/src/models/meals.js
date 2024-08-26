@@ -1,15 +1,15 @@
 import mongoose, {Schema} from "mongoose";
 
 const mealSchema = new Schema({
-    Name: {
+    name: {
         type: String,
         required: true,
     },
-    Beschreibung: {
+    description: {
         type: String,
         required: true,
     },
-    link_fur_image: {
+    image: {
         type: String,
         required: true,
     },
