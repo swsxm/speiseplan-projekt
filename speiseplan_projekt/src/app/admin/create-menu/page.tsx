@@ -49,9 +49,15 @@ export default function speiseplan() {
     setIsCreateMealModalOpen(true);
   };
 
-  const closeCreateMealModal = () => {
+  function closeCreateMealModal() {
     setIsCreateMealModalOpen(false);
-  };
+
+    // Load the menu data
+    if (selectedType) {
+      loadMealInDB(selectedType);  
+      loadMenuData(selectedType); 
+    }
+  }
 
   interface menuItem {
     _id: string;
@@ -110,6 +116,7 @@ export default function speiseplan() {
         }),
       });
 
+      
       const rawData = await res.json();
       const data = convertToMenuItem(rawData);
       if (Array.isArray(data)) {
@@ -153,6 +160,11 @@ export default function speiseplan() {
           selectedType,
         }),
       });
+
+      // Add the new item to the menuInDB state
+      setMenuInDB(prevMenu => [...prevMenu, item]);
+
+      // Load the updated menu
       await loadMealInDB(item.type);
     } catch (error) {
       console.error('Fehler beim Hinzufügen zum Menü:', error);
