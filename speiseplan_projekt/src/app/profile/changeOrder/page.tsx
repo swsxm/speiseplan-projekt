@@ -25,8 +25,20 @@ function changeOrders() {
   const [orderItems, setOrderItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [isPastDate, setIsPastDate] = useState<boolean>(false);
 
   useEffect(() => {
+    function checkIfPastDate(date: Date | null): boolean {
+        /**
+         * Check if the selected date is in the past
+         */
+        if (!date) return false;  // Always return a boolean value
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return date < today;
+      }
+  
+
     async function fetchOrderItems(date: Date | null) {
       /**
        * Fetch orders for the selected date
@@ -38,6 +50,7 @@ function changeOrders() {
         const data: MenuItem[] = await response.json();
         setOrderItems(data);
         setLoading(false);
+        setIsPastDate(checkIfPastDate(date));
       } catch (error) {
         console.error("Fehler beim Abrufen der Bestellungen:", error);
         setLoading(false);
@@ -49,8 +62,10 @@ function changeOrders() {
 
   function increaseQuantity(id: string) {
   /**
-   * Increase the quantity of the item
+   * Increase the quantity of the item (disabled for past dates)
    */
+    if (isPastDate) return; // Disable functionality for past dates
+
     const updatedOrderItems = orderItems.map((item: MenuItem) => {
       if (item._id === id) {
         return { ...item, quantity: item.quantity + 1 };
@@ -62,8 +77,10 @@ function changeOrders() {
 
   function decreaseQuantity(id: string) {
   /**
-   * Decreases the quantity of the Item
+   * Decreases the quantity of the Item (disabled for past dates)
    */
+    if (isPastDate) return; // Disable functionality for past dates
+
     const updatedOrderItems = orderItems.map((item: MenuItem) => {
       if (item._id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
@@ -90,15 +107,17 @@ function changeOrders() {
 
   async function handleConfirmChanges() {
   /**
-   * Handle confirmation of order changes
+   * Handle confirmation of order changes (disabled for past dates)
    */
+    if (isPastDate) return; // Disable functionality for past dates
+
     try {
       const updatedMeals = orderItems.map(item => ({
         _id: item._id,
         quantity: item.quantity
       }));
 
-      await fetch("../api/changeOrder", {
+      await fetch("/api/changeOrder", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,9 +165,21 @@ function changeOrders() {
                         <div className="flex-grow">
                           <h3 className="font-semibold">{orderItem.name}</h3>
                           <div className="flex items-center mt-2">
-                            <button onClick={() => decreaseQuantity(orderItem._id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md mr-2">-</button>
+                            <button 
+                              onClick={() => decreaseQuantity(orderItem._id)} 
+                              className={`px-2 py-1 ${isPastDate ? 'bg-gray-300 text-gray-400' : 'bg-gray-200 text-gray-600'} rounded-md mr-2`}
+                              disabled={isPastDate}
+                            >
+                              -
+                            </button>
                             <span>{orderItem.quantity}</span>
-                            <button onClick={() => increaseQuantity(orderItem._id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md ml-2">+</button>
+                            <button 
+                              onClick={() => increaseQuantity(orderItem._id)} 
+                              className={`px-2 py-1 ${isPastDate ? 'bg-gray-300 text-gray-400' : 'bg-gray-200 text-gray-600'} rounded-md ml-2`}
+                              disabled={isPastDate}
+                            >
+                              +
+                            </button>
                           </div>
                           <div>{orderItem.date}</div>
                         </div>
@@ -175,7 +206,11 @@ function changeOrders() {
                     </li>
                   </ul>
 
-                  <button onClick={handleConfirmChanges} className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer">
+                  <button 
+                    onClick={handleConfirmChanges} 
+                    className={`px-4 py-3 mb-2 inline-block text-lg w-full text-center font-medium ${isPastDate ? 'bg-gray-300 text-gray-400 cursor-not-allowed' : 'text-white bg-green-600 hover:bg-green-700'} border border-transparent rounded-md`}
+                    disabled={isPastDate}
+                  >
                     Änderungen bestätigen
                   </button>
                 </article>
