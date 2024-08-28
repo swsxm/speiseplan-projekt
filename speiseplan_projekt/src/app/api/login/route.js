@@ -42,6 +42,7 @@ export async function POST(req) {
         );
         response.cookies.set("token", token, {httpOnly: true});
         response.cookies.set("name", user.name)
+        response.cookies.set("employeeID", user.employee_id)
         console.log(user.name)
         
         return response;
