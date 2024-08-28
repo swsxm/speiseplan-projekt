@@ -92,12 +92,20 @@ export default function speiseplan() {
   }, [selectedTag, selectedWeekKey]);
 
   function openModal(item: MenuItem) {
+   /**
+    * Date and MenuItem is stored in local storage
+    */
+    console.log(item.price)
     item.day = selectedTag;
     item.date = selectedWeek.find(day => day.weekday === selectedTag)?.date || '';
+    item.quantity = 1;
     setSelectedItem(item);
     setIsModalOpen(true);
+  
+    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    cartItems.push(item);
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
   };
-
   function closeModal () {
     setIsModalOpen(false);
   };
