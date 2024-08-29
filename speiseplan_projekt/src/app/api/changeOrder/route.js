@@ -1,98 +1,60 @@
-import express from 'express';
-import Order from '@/models/orders';
-import Meal from '@/models/meals';
+import { NextResponse } from "next/server";
+import { connectMongoDB } from "@/lib/mongodb";
+import Order from "@/models/orders";
 
-const router = express.Router();
-
-router.get('/meals', async (req, res) => {
-/**
- * Get all meals
- */
+export async function POST(req) {
     try {
-        const meals = await Meal.find();
-        res.status(200).json(meals);
-    } catch (error) {
-        res.status(500).json({ message: 'Fehler beim Abrufen der Mahlzeiten', error });
-    }
-});
+        await connectMongoDB();
 
-router.get('/meals/:id', async (req, res) => {
-/**
- * Get a specific meal by ID
- */
-    try {
-        const meal = await Meal.findById(req.params.id);
-        if (!meal) return res.status(404).json({ message: 'Mahlzeit nicht gefunden' });
-        res.status(200).json(meal);
-    } catch (error) {
-        res.status(500).json({ message: 'Fehler beim Abrufen der Mahlzeit', error });
-    }
-});
+        const { updatedMeals, userId, date } = await req.json();
+        const targetDate = new Date(date);
+        targetDate.setUTCHours(0, 0, 0, 0); // Set time to 00:00:00 for accurate date matching
 
-router.post('/orders', async (req, res) => {
-/**
- * Create a new order
- */
-    try {
-        const newOrder = new Order({
-            "user-id": req.body.userId,
-            date: req.body.date,
-            orderedMeals: req.body.orderedMeals.map(meal => ({
-                mealId: meal.mealId,
-                quantity: meal.quantity,
-                date: meal.date,
-                day: meal.day
-            }))
+        // Find all orders for the user and date
+        const orders = await Order.find({
+            "user-id": userId,
+            "orderedMeals.date": targetDate
         });
-        await newOrder.save();
-        res.status(201).json(newOrder);
-    } catch (error) {
-        res.status(500).json({ message: 'Fehler beim Erstellen der Bestellung', error });
-    }
-});
 
-router.get('/orders', async (req, res) => {
-/**
- * Get orders for a specific date
- */
-    const { date } = req.query;
-    try {
-        const orders = await Order.find({ date: new Date(date) }).populate('orderedMeals.mealId');
-        res.status(200).json(orders);
-    } catch (error) {
-        res.status(500).json({ message: 'Fehler beim Abrufen der Bestellungen', error });
-    }
-});
-
-router.post('/changeOrder', async (req, res) => {
-/**
- * Update an existing order
- */
-    const { orderedMeals } = req.body;
-    try {
-        for (const meal of orderedMeals) {
-            await Order.updateOne(
-                { 'orderedMeals._id': meal._id },
-                { $set: { 'orderedMeals.$.quantity': meal.quantity } }
-            );
+        if (orders.length === 0) {
+            console.log("No orders found for the provided date and user.");
+            return NextResponse.json({ message: "No orders found for the provided date and user." }, { status: 404 });
         }
-        res.status(200).json({ message: 'Bestellung erfolgreich aktualisiert' });
-    } catch (error) {
-        res.status(500).json({ message: 'Fehler beim Aktualisieren der Bestellung', error });
-    }
-});
 
-router.delete('/orders/:id', async (req, res) => {
-/**
- * Delete an order by ID
- */
-    try {
-        const order = await Order.findByIdAndDelete(req.params.id);
-        if (!order) return res.status(404).json({ message: 'Bestellung nicht gefunden' });
-        res.status(200).json({ message: 'Bestellung erfolgreich gelöscht' });
-    } catch (error) {
-        res.status(500).json({ message: 'Fehler beim Löschen der Bestellung', error });
-    }
-});
+        console.log("Original orders:", orders);
 
-export default router;
+        // Iterate through the updatedMeals to either update quantity or delete the orderedMeal
+        for (const updatedMeal of updatedMeals) {
+            for (const order of orders) {
+                const mealToUpdate = order.orderedMeals.id(updatedMeal.orderMealId);
+
+                if (mealToUpdate) {
+                    if (updatedMeal.quantity > 0) {
+                        console.log(`Updating meal ${mealToUpdate._id} to quantity ${updatedMeal.quantity}`);
+                        mealToUpdate.quantity = updatedMeal.quantity;
+                    } else {
+                        console.log(`Removing meal ${mealToUpdate._id} as quantity is 0`);
+                        order.orderedMeals.pull({ _id: updatedMeal.orderMealId }); // Correct method to remove the meal
+                    }
+                } else {
+                    console.log(`Meal ${updatedMeal.orderMealId} not found in order.`);
+                }
+
+                // If orderedMeals is empty after update, remove the entire order
+                if (order.orderedMeals.length === 0) {
+                    console.log(`No meals left in order ${order._id}. Deleting the order.`);
+                    await Order.findByIdAndDelete(order._id);
+                } else {
+                    await order.save(); // Save only if the order still has meals
+                }
+            }
+        }
+
+        console.log("Updated orders:", orders);
+
+        return NextResponse.json({ message: "Orders updated successfully." }, { status: 200 });
+    } catch (error) {
+        console.error("Error updating orders:", error);
+        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    }
+}

@@ -21,15 +21,17 @@ export async function POST(req) {
     await Order.create({
       "user-id": payload.id,
       "date": new Date(),  
-      "orderedMeals": ordered_meals_id.map(item => ({
-        mealId: item._id,
-        quantity: item.quantity,
-        day: item.day,
-        date: new Date(item.date) 
-      }))
+      "orderedMeals": ordered_meals_id.map(item => {
+        const orderDate = new Date(item.date);
+        orderDate.setUTCHours(0, 0, 0, 0); 
+        return {
+          mealId: item._id,
+          quantity: item.quantity,
+          day: item.day,
+          date: orderDate
+        };
+      })
     });
-
-    // Erfolgsmeldung
     return NextResponse.json({ status: 201, message: "Order created successfully" });
   } catch (error) {
     console.error("Error creating order:", error);
