@@ -70,7 +70,7 @@ export default function admin() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div>
       <Navbar />
       <div className="flex-grow">
         <nav className="mx-auto p-4">
