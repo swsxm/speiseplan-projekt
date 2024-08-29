@@ -11,7 +11,14 @@ export async function POST(req) {
         await connectMongoDB();
 
         const { date: dateString, userId } = await req.json();
+
+        /**
+         * Validate the date
+         */
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+            return NextResponse.json({ message: "Invalid date provided." }, { status: 400 });
+        }
 
         /**
          * Set the time of the date to 00:00:00 to search only by day
