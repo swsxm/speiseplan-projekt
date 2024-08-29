@@ -4,8 +4,6 @@ import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-
-
 function profile() { 
   
   const router = useRouter();
@@ -75,17 +73,16 @@ function profile() {
             </button>
           </div><br />
           <div>
-          <Link href={"/profile/changeOrder"}>
-                <button className='bg-black text-white flex items-center py-2 rounded-full'>
-                  Getätigte Bestellungen
-                </button>
+            <Link href={"/profile/changeOrder"}>
+              <button className="bg-black text-white font-bold cursor-pointer py-2 px-6 rounded">
+                Getätigte Bestellungen
+              </button>
             </Link>
           </div>
-
         </div>
       </div>
     </div>
   );
 }
 
-export default profile; 
+export default profile;
