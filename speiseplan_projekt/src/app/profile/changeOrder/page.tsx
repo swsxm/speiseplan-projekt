@@ -16,7 +16,7 @@ interface MenuItem {
   type: string;
   day: string;
   date: string;
-  orderMealId: string; // Stores the _id of the orderedMeals
+  orderMealId: string;
 }
 
 function ChangeOrders() {
@@ -55,7 +55,7 @@ function ChangeOrders() {
 
         const data = await res.json();
         if (Array.isArray(data)) {
-          setOrderItems(data); // Show all items initially
+          setOrderItems(data);
         } else {
           setOrderItems([]);
           console.warn('Received data is not an array:', data);
@@ -82,7 +82,7 @@ function ChangeOrders() {
 
     try {
       const updatedMeals = orderItems.map(item => ({
-        orderMealId: item.orderMealId,  // Pass the orderMealId to the backend
+        orderMealId: item.orderMealId, 
         quantity: item.quantity
       }));
 
@@ -96,7 +96,7 @@ function ChangeOrders() {
 
       alert("Bestellungen wurden erfolgreich aktualisiert!");
       // Optional: Refetch the order items after confirmation to update the list
-      setOrderItems(orderItems.filter(item => item.quantity > 0)); // Hide meals with 0 quantity after confirmation
+      setOrderItems(orderItems.filter(item => item.quantity > 0));
     } catch (error) {
       console.error("Fehler beim Bestätigen der Änderungen:", error);
     }

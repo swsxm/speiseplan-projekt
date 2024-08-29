@@ -35,7 +35,7 @@ export async function POST(req) {
          */
         const orderedMeals = orders.flatMap(order => 
             order.orderedMeals.map(meal => ({
-                _id: meal._id,  // Include _id from orderedMeals
+                _id: meal._id, 
                 mealId: meal.mealId,
                 quantity: meal.quantity
             }))
@@ -55,7 +55,7 @@ export async function POST(req) {
             return {
                 ...meal.toObject(),
                 quantity: correspondingOrder ? correspondingOrder.quantity : 0,
-                orderMealId: correspondingOrder ? correspondingOrder._id : null  // Store _id from orderedMeals
+                orderMealId: correspondingOrder ? correspondingOrder._id : null
             };
         });
 

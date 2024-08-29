@@ -34,7 +34,7 @@ export async function POST(req) {
                         mealToUpdate.quantity = updatedMeal.quantity;
                     } else {
                         console.log(`Removing meal ${mealToUpdate._id} as quantity is 0`);
-                        order.orderedMeals.pull({ _id: updatedMeal.orderMealId }); // Correct method to remove the meal
+                        order.orderedMeals.pull({ _id: updatedMeal.orderMealId });
                     }
                 } else {
                     console.log(`Meal ${updatedMeal.orderMealId} not found in order.`);
@@ -45,7 +45,7 @@ export async function POST(req) {
                     console.log(`No meals left in order ${order._id}. Deleting the order.`);
                     await Order.findByIdAndDelete(order._id);
                 } else {
-                    await order.save(); // Save only if the order still has meals
+                    await order.save();
                 }
             }
         }
