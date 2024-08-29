@@ -1,29 +1,32 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
-import Order from '@/models/orders';
+import Order from "@/models/orders";
 import Meal from "@/models/meals";
+import { verifyUser } from "../../../lib/verifyToken";
 
-export async function POST(req) { 
+export async function POST(req) {
     /**
-     * Handle the request to fetch meals for a given user and date
+     * Fetch meals for a given user and date
      */
     try {
-        await connectMongoDB();
+        const check = await verifyUser(req);
+        if (check instanceof NextResponse) {
+            return check;
+        }
+        const payload = check;
 
         const { date: dateString, userId } = await req.json();
+        const date = new Date(dateString);
 
         /**
-         * Validate the date
+         * Validate the date and set the time to 00:00:00 to search only by day
          */
-        const date = new Date(dateString);
         if (isNaN(date.getTime())) {
             return NextResponse.json({ message: "Invalid date provided." }, { status: 400 });
         }
-
-        /**
-         * Set the time of the date to 00:00:00 to search only by day
-         */
         date.setUTCHours(0, 0, 0, 0);
+
+        await connectMongoDB();
 
         /**
          * Find orders for the user and date
@@ -40,9 +43,9 @@ export async function POST(req) {
         /**
          * Extract all mealIds, quantities, and _id from the orders
          */
-        const orderedMeals = orders.flatMap(order => 
+        const orderedMeals = orders.flatMap(order =>
             order.orderedMeals.map(meal => ({
-                _id: meal._id, 
+                _id: meal._id,
                 mealId: meal.mealId,
                 quantity: meal.quantity
             }))

@@ -1,16 +1,35 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import Order from "@/models/orders";
+import { verifyUser } from "../../../lib/verifyToken";
 
 export async function POST(req) {
+    /**
+     * Handle updating or removing ordered meals for a user on a specific date
+     */
     try {
-        await connectMongoDB();
+        const check = await verifyUser(req);
+        if (check instanceof NextResponse) {
+            return check;
+        }
+        const payload = check;
 
         const { updatedMeals, userId, date } = await req.json();
         const targetDate = new Date(date);
+
+        /**
+         * Validate the date and set the time to 00:00:00 to search only by day
+         */
+        if (isNaN(targetDate.getTime())) {
+            return NextResponse.json({ message: "Invalid date provided." }, { status: 400 });
+        }
         targetDate.setUTCHours(0, 0, 0, 0); // Set time to 00:00:00 for accurate date matching
 
-        // Find all orders for the user and date
+        await connectMongoDB();
+
+        /**
+         * Find all orders for the user and date
+         */
         const orders = await Order.find({
             "user-id": userId,
             "orderedMeals.date": targetDate
@@ -23,8 +42,14 @@ export async function POST(req) {
 
         console.log("Original orders:", orders);
 
-        // Iterate through the updatedMeals to either update quantity or delete the orderedMeal
+        /**
+         * Iterate through the updatedMeals to either update quantity or delete the orderedMeal
+         */
         for (const updatedMeal of updatedMeals) {
+            if (updatedMeal.quantity < 0) {
+                return NextResponse.json({ message: "Invalid quantity provided." }, { status: 400 });
+            }
+
             for (const order of orders) {
                 const mealToUpdate = order.orderedMeals.id(updatedMeal.orderMealId);
 
@@ -40,7 +65,9 @@ export async function POST(req) {
                     console.log(`Meal ${updatedMeal.orderMealId} not found in order.`);
                 }
 
-                // If orderedMeals is empty after update, remove the entire order
+                /**
+                 * If orderedMeals is empty after update, remove the entire order
+                 */
                 if (order.orderedMeals.length === 0) {
                     console.log(`No meals left in order ${order._id}. Deleting the order.`);
                     await Order.findByIdAndDelete(order._id);
