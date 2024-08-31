@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage"
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.10",

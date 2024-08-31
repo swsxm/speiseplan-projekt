@@ -28,6 +28,11 @@ To run a specific test file, use:
 npm run test -- ./src/app/test/page.test.jsx
 ```
 
+To run a specific test file and see a coverage report after use:
+```bash
+npm run coverage -- ./src/app/test/page.test.jsx
+```
+
 ## Useful Links
 
 For further reading and to clarify any questions, check out these resources:
