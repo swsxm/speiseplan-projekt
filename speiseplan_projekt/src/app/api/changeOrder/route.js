@@ -23,7 +23,7 @@ export async function POST(req) {
         if (isNaN(targetDate.getTime())) {
             return NextResponse.json({ message: "Invalid date provided." }, { status: 400 });
         }
-        targetDate.setUTCHours(0, 0, 0, 0); // Set time to 00:00:00 for accurate date matching
+        targetDate.setUTCHours(0, 0, 0, 0);
 
         await connectMongoDB();
 
@@ -39,8 +39,6 @@ export async function POST(req) {
             console.log("No orders found for the provided date and user.");
             return NextResponse.json({ message: "No orders found for the provided date and user." }, { status: 404 });
         }
-
-        console.log("Original orders:", orders);
 
         /**
          * Iterate through the updatedMeals to either update quantity or delete the orderedMeal
@@ -76,9 +74,6 @@ export async function POST(req) {
                 }
             }
         }
-
-        console.log("Updated orders:", orders);
-
         return NextResponse.json({ message: "Orders updated successfully." }, { status: 200 });
     } catch (error) {
         console.error("Error updating orders:", error);

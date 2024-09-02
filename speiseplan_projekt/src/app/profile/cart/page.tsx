@@ -40,7 +40,6 @@ function Cart() {
         if (Array.isArray(parsedData)) {
           setCartItems(parsedData);
           parsedData.forEach(item => {
-            console.log('Item Preis:', item.price); // Print the price for each item
           });
 
         } else {

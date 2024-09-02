@@ -85,7 +85,6 @@ function ChangeOrders() {
         orderMealId: item.orderMealId, 
         quantity: item.quantity
       }));
-      console.log(updatedMeals);
       await fetch("../api/changeOrder", {
         method: "POST",
         headers: {
@@ -95,7 +94,6 @@ function ChangeOrders() {
       });
 
       alert("Bestellungen wurden erfolgreich aktualisiert!");
-      // Optional: Refetch the order items after confirmation to update the list
       setOrderItems(orderItems.filter(item => item.quantity > 0));
     } catch (error) {
       console.error("Fehler beim Bestätigen der Änderungen:", error);
@@ -164,7 +162,7 @@ function ChangeOrders() {
                               +
                             </button>
                           </div>
-                          <div>{orderItem.date}</div> {/* Display the date */}
+                          <div>{orderItem.date}</div>
                         </div>
                         <div className="flex-none">
                           <p className="font-semibold">{(orderItem.price * orderItem.quantity).toFixed(2)} €</p>
