@@ -18,7 +18,7 @@ export async function POST(req) {
         const targetDate = new Date(date);
 
         /**
-         * Validate the date and set the time to 00:00:00 to search only by day
+         * Validate the date
          */
         if (isNaN(targetDate.getTime())) {
             return NextResponse.json({ message: "Invalid date provided." }, { status: 400 });

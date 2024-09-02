@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import Order from "@/models/orders";
-import Meal from "@/models/meals";
 import { verifyUser } from "../../../lib/verifyToken";
 
 export async function POST(req) {
@@ -29,50 +28,62 @@ export async function POST(req) {
         await connectMongoDB();
 
         /**
-         * Find orders for the user and date
+         * Perform an aggregate query to join orders with their respective meals
          */
-        const orders = await Order.find({
-            "user-id": userId,
-            "orderedMeals.date": date
-        });
+        const ordersWithMeals = await Order.aggregate([
+            {
+                $match: {
+                    "user-id": payload.id
+                }
+            },
+            {
+                $unwind: "$orderedMeals"
+            },
+            {
+                $match: {
+                    "orderedMeals.date": date
+                }
+            },
+            {
+                $lookup: {
+                    from: "meals",
+                    localField: "orderedMeals.mealId",
+                    foreignField: "_id",
+                    as: "mealDetails"
+                }
+            },
+            {
+                $unwind: "$mealDetails"
+            },
+            {
+                $project: {
+                    orderMealId: "$orderedMeals._id",
+                    quantity: "$orderedMeals.quantity",
+                    day: "$orderedMeals.day",
+                    date: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$orderedMeals.date"
+                        }
+                    },
+                    _id: "$orderedMeals.mealId",
+                    name: "$mealDetails.name",
+                    description: "$mealDetails.description",
+                    price: "$mealDetails.price",
+                    image: "$mealDetails.image",
+                    type: "$mealDetails.type"
+                }
+            }
+        ]);
 
-        if (orders.length === 0) {
+        if (ordersWithMeals.length === 0) {
             return NextResponse.json({ message: "No orders found for this user and date." }, { status: 200 });
         }
 
         /**
-         * Extract all mealIds, quantities, and _id from the orders
+         * Return the combined data as JSON
          */
-        const orderedMeals = orders.flatMap(order =>
-            order.orderedMeals.map(meal => ({
-                _id: meal._id,
-                mealId: meal.mealId,
-                quantity: meal.quantity
-            }))
-        );
-
-        /**
-         * Fetch corresponding Meal documents from the meals collection
-         */
-        const mealIds = orderedMeals.map(meal => meal.mealId);
-        const meals = await Meal.find({ _id: { $in: mealIds } });
-
-        /**
-         * Add quantity and _id to the meal documents
-         */
-        const mealsWithQuantity = meals.map(meal => {
-            const correspondingOrder = orderedMeals.find(om => om.mealId.toString() === meal._id.toString());
-            return {
-                ...meal.toObject(),
-                quantity: correspondingOrder ? correspondingOrder.quantity : 0,
-                orderMealId: correspondingOrder ? correspondingOrder._id : null
-            };
-        });
-
-        /**
-         * Return the meals with quantity and _id as JSON
-         */
-        return NextResponse.json(mealsWithQuantity, { status: 200 });
+        return NextResponse.json(ordersWithMeals, { status: 200 });
     } catch (error) {
         console.error("Error fetching meals:", error);
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });

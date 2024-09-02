@@ -85,7 +85,7 @@ function ChangeOrders() {
         orderMealId: item.orderMealId, 
         quantity: item.quantity
       }));
-
+      console.log(updatedMeals);
       await fetch("../api/changeOrder", {
         method: "POST",
         headers: {
