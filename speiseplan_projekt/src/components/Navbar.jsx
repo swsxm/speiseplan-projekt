@@ -87,7 +87,7 @@ export default function navbar() {
                         {isAdmin && (
                             <li className='text-xl py-4 flex'>
                                 <Link href={"/admin"}>
-                                    <button className='text-xl py-4 flex transparent-button'><FaUserShield size={25} className='mr-4' /> Admin Dashboard</button> 
+                                    <button className='text-xl py-4 flex transparent-button'><FaUserShield size={25} className='mr-4' /> Admin Seite</button> 
                                 </Link>
                             </li>
                         )}
