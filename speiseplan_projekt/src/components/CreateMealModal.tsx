@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
+import { showError } from '@/lib/validationHelpers';
 
 interface CreateMealModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
+/**
+ * Modal to create a new valid meal
+ */
+function createMealModal({ isOpen, onClose }: CreateMealModalProps) {
     const [mealName, setMealName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -18,26 +22,11 @@ function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
             setErrorMessage('Bitte füllen Sie alle erforderlichen Felder aus.');
             return;
         }
-
-        if (description.length > 100) {
-            setErrorMessage('Die Beschreibung darf maximal 100 Zeichen lang sein.');
-            return;
-        }
-        if (mealName.length > 30) {
-            setErrorMessage('Der Name darf maximal 30 Zeichen lang sein.');
-            return;
-        }
-
-        if (isNaN(parseFloat(price))) {
-            setErrorMessage('Der Preis muss eine Zahl sein.');
-            return;
-        }
-
         const newMeal = {
-            Name: mealName,
-            Beschreibung: description,
-            price: parseFloat(price),
-            link_fur_image: imageLink,
+            name: mealName,
+            description: description,
+            price: price,
+            image: imageLink,
             type: type
         };
         try {
@@ -46,11 +35,13 @@ function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ newMeal}),
+                body: JSON.stringify({ newMeal }),
             });
+        
             const data = await res.json();
+            showError(data)
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
 
         setMealName('');
@@ -63,12 +54,12 @@ function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
         onClose();
     };
 
+    /**
+     * Event is triggerd on every price change (input field)
+     */
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Überprüfe, ob die eingegebene Zeichenfolge eine gültige Zahl ist
         const value = e.target.value;
-        if (/^\d*\.?\d*$/.test(value)) {
-            setPrice(value);
-        }
+        setPrice(value);
     };
 
     return (
@@ -144,4 +135,4 @@ function CreateMealModal({ isOpen, onClose }: CreateMealModalProps) {
     );
 }
 
-export default CreateMealModal;
+export default createMealModal;

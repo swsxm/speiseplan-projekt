@@ -1,19 +1,15 @@
 import mongoose, {Schema} from "mongoose";
 
 const mealSchema = new Schema({
-    id: {
-        type: Number,
-        required: true,
-    },
-    Name: {
+    name: {
         type: String,
         required: true,
     },
-    Beschreibung: {
+    description: {
         type: String,
         required: true,
     },
-    link_fur_image: {
+    image: {
         type: String,
         required: true,
     },
@@ -26,7 +22,6 @@ const mealSchema = new Schema({
         required: true,
     }
 });
-
 
 const Meal = mongoose.models.Meal || mongoose.model("Meal", mealSchema);
 export default Meal;

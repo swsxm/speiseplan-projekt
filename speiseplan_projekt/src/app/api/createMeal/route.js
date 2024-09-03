@@ -1,40 +1,77 @@
 import { NextResponse } from "next/server";
 import Meal from "@/models/meals"
 import { connectMongoDB } from "@/lib/mongodb";
-import { verifyAuth } from "@/lib/verifyToken";
+import { validateLength, validateFloat, validateUrl } from "../../../lib/validationHelpers";
+import { verifyAdmin }from "../../../lib/verifyToken"
+
+
+function validateType(type) {
+/**
+ * Validate the Menu Type
+ */
+    const validTypes = ['Menu1', 'Menu2', 'Suppe', 'Nachtisch']
+    if (validTypes.includes(type)) {
+        return null;
+    }
+    return 'Type is not valid'
+}
+
+
+async function handleValidationErrors(mealName, mealDescription, mealUrl, mealType, mealPrice) {
+/**
+ * Helper function to give back an error
+ */
+    const errors = {
+        description: validateLength(mealDescription, 1, 255),
+        type: validateType(mealType),
+        url: validateUrl(mealUrl),
+        name: validateLength(mealName, 1, 64),
+        price: validateFloat(mealPrice, 1, 8),
+    };
+
+    for (const [field, error] of Object.entries(errors)) {
+        if (error) return { status: 400, error: error };
+    }
+    return null;
+}
+
 
 export async function POST(req) {
+/**
+ * This function takes a post request and validates if the
+ * request to create a meal is legit
+ */
     try {
-        // Token aus der Anfrage extrahieren
-        const token = req.cookies.get('token')?.value;
-        if (!token) {
-            return NextResponse.json({ status: 401, message: "Unauthorized" });
+        
+        const check = await verifyAdmin(req)
+        if (check instanceof NextResponse) {
+            return check
         }
-        // Token verifizieren und prüfen ob Admin
-        const payload = await verifyAuth(token);
-        if(payload.admin == false){
-            return NextResponse.json({ status: 403, message: "Not an admin" });
-        }
-        // Extrahiere erforderliche Informationen aus der Anfrage
-        const   data  = await req.json();
-        console.log(data);
-        // Stelle eine Verbindung zur MongoDB her
-        await connectMongoDB();
 
-        const highestIdMeal = await Meal.findOne().sort({ id: -1 });
-        const newId = highestIdMeal ? highestIdMeal.id + 1 : 1;
+        const data = await req.json();
+        const mealName = data.newMeal.name
+        const mealDescription = data.newMeal.description
+        const mealUrl = data.newMeal.image
+        const mealType = data.newMeal.type
+        const mealPrice = data.newMeal.price
+
+        const validationError = await handleValidationErrors(mealName, mealDescription, mealUrl, mealType, mealPrice);
+        if (validationError) {
+            return NextResponse.json(validationError);
+        }
+
+        await connectMongoDB();
+        
 
         const newMeal = new Meal({
-            id: newId,
-            Name: data.newMeal.Name,
-            Beschreibung: data.newMeal.Beschreibung,
-            link_fur_image: data.newMeal.link_fur_image,
-            type: data.newMeal.type,
-            price: data.newMeal.price
+            name: mealName,
+            description: mealDescription,
+            image: mealUrl,
+            type: mealType,
+            price: mealPrice 
         });
 
         await newMeal.save();
-        // Erfolgsmeldung zurückgeben
         return NextResponse.json({ status: 201, message: "Meal created successfully" });
     } catch (error) {
         console.error("Error creating order:", error);

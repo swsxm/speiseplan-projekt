@@ -27,7 +27,7 @@ const perks = [
 ];
 
 
-const Home = () => {
+const home = () => {
   return (
     <div>
       <Navbar />
@@ -124,4 +124,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default home;

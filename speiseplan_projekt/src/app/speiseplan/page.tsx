@@ -15,250 +15,203 @@ import {
 } from "@nextui-org/react";
 import { SlArrowDown } from "react-icons/sl";
 import { MdOutlineShoppingCart } from "react-icons/md";
+import { format, startOfWeek, addDays, isAfter, isFriday } from 'date-fns';
+import { de } from 'date-fns/locale';
 
-
-export default function Speiseplan() {
-    interface MenuItem {
-        _id: string;
-        id: number;
-        Name: string;
-        Beschreibung: string;
-        price: number;
-        link_fur_image: string;
-        type: string;
-        day: string;
-        date: string;
-        quantity: number;
-      }
+export default function speiseplan() {
+  interface MenuItem {
+    _id: string;
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    type: string;
+    day: string;
+    date: string;
+    quantity: number;
+  }
 
   const [userName, setUserName] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [menuData, setMenuData] = useState<MenuItem[]>([]);
+  const [selectedTag, setSelectedTag] = useState("Montag");
+  const [selectedWeekKey, setSelectedWeekKey] = useState("currentWeek");
 
+  const currentDate = new Date();
+  
+  const currentWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+  const nextWeekStart = addDays(currentWeekStart, 7);
 
-  const openModal = (item: MenuItem) => {
-    item.day = selectedTag;
-    item.date = selectedDate;
-    setSelectedItem(item);
-    setIsModalOpen(true);
+  function generateWeekDays(weekStart: Date) {
+  /**
+   * Generate weekdays and dates for current and next weeks
+   */
+    return Array.from({ length: 6 }, (_, i) => {
+      const day = addDays(weekStart, i);
+      return {
+        weekday: format(day, 'EEEE', { locale: de }),
+        date: format(day, 'yyyy-MM-dd')
+      };
+    });
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-  const [menuData, setMenuData] = React.useState<MenuItem[]>([]); // State für Menüdaten
+  const currentWeek = generateWeekDays(currentWeekStart);
+  const nextWeek = generateWeekDays(nextWeekStart);
 
+  const selectedWeek = selectedWeekKey === "currentWeek" ? currentWeek : nextWeek;
 
-
-  //Berechnen der aktuellen und der Nächsten Woche
-  //Datum der Wochen werden in Arrays gespeichert
-  var currentDate = new Date();
-  var currentDayNumber = currentDate.getDay();
-  var startOfCurrentWeek = new Date(currentDate);
-  startOfCurrentWeek.setDate(startOfCurrentWeek.getDate() - currentDayNumber + (currentDayNumber === 0 ? -6 : 1)); // Setze den Starttag auf Montag der aktuellen Woche
-  var startOfNextWeek = new Date(startOfCurrentWeek);
-  startOfNextWeek.setDate(startOfNextWeek.getDate() + 7);
-
-  interface WeekDay {
-    weekday: string;
-    date: string;
-  }
-  const currentWeek: WeekDay[] = [];
-  const nextWeek: WeekDay [] = [];
- 
-  for (var i = 0; i < 6; i++) {
-      var day = new Date(startOfCurrentWeek);
-      day.setDate(day.getDate() + i);
-      var formattedDate = day.toISOString().slice(0, 10);
-      currentWeek.push({ weekday: day.toLocaleDateString('de-DE', { weekday: 'long' }), date: formattedDate }); // Füge den Wochentag und das Datum hinzu
-      var day = new Date(startOfNextWeek);
-      day.setDate(day.getDate() + i);
-      var formattedDate = day.toISOString().slice(0, 10);
-      nextWeek.push({ weekday: day.toLocaleDateString('de-DE', { weekday: 'long' }), date: formattedDate }); // Füge den Wochentag und das Datum hinzu
-  }
-
-  const [selectedTag, setSelectedTag] = React.useState("Montag"); // State für ausgewählten Tag
-  const [selectedWeekKey, setselectedWeekKey] = React.useState("currentWeek"); // State für ausgewählte Woche
-  
-  var selectedWeek = nextWeek;
-  if(selectedWeekKey == "currentWeek"){
-     selectedWeek = currentWeek;
-  }
-
-
-  
-
-  // Funktion zum Laden der Menüdaten
-  const loadMenuData = async (date : string) => {
+  async function loadMenuData(date: string){
+  /*
+    Load menu data for selected date
+  */
+    setMenuData([]);
     try {
       const res = await fetch("api/plan", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ "date": date }),
+        body: JSON.stringify({ date }),
       });
       const data = await res.json();
-      // Die Daten haben eine verschachtelte Struktur, also müssen wir sie entpacken
-      const flattenedData = data.flat(); // Entpacke die verschachtelten Arrays
-      setMenuData(flattenedData); // Menüdaten setzen, sobald sie geladen sind
+      if (data.message != "Plan not found") {
+        setMenuData(data.flat());
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  React.useEffect(() => {
-    for (let i = 0; i < selectedWeek.length; i++) {
-      if (selectedWeek[i].weekday === selectedTag) {
-        const dateOfCurrentWeek = selectedWeek[i].date;
-        const isoDate = new Date(dateOfCurrentWeek).toISOString().slice(0, 10);
-        loadMenuData(isoDate); // Menüdaten für den ausgewählten Tag laden
-        break;
-      }
+  useEffect(() => {
+    const selectedDay = selectedWeek.find(day => day.weekday === selectedTag);
+    if (selectedDay) {
+      loadMenuData(selectedDay.date);
     }
-  }, [selectedTag,selectedWeekKey]); // Wird ausgeführt, wenn selectedTag sich ändert
-  // Voreinstellung für selectedTag, falls es undefined ist
-  const selectedTagDisplay = selectedTag ? selectedTag.replaceAll("_", " ") : "";
-  
-  // Funktion, um das Datum für den ausgewählten Wochentag zu erhalten
-  const getDateForSelectedTag = () => {
-    for (let i = 0; i < selectedWeek.length; i++) {
-      if (selectedWeek[i].weekday === selectedTag) {
-        return selectedWeek[i].date; // Gib das Datum für den ausgewählten Tag zurück
-      }
-    }
+  }, [selectedTag, selectedWeekKey]);
+
+  function openModal(item: MenuItem) {
+    item.day = selectedTag;
+    item.date = selectedWeek.find(day => day.weekday === selectedTag)?.date || '';
+    setSelectedItem(item);
+    setIsModalOpen(true);
   };
-  const selectedDate = getDateForSelectedTag() || ''; // Use empty string as default value if undefined
 
+  function closeModal () {
+    setIsModalOpen(false);
+  };
 
-  //Funktion um zu prüfen ob es feritag 18 uhr ist
-  const getFriday18 = () => {
-    if(currentDate.getDay() == 5){
-      if(currentDate.getHours()>=18){
-        return false;
-      }
-    }else if(currentDate.getDay() > 5){
-      return false;
-    }
-    return true;
-  }
-  const Friday18 = getFriday18();
-  
-  console.log(currentDate.getDay());
-  console.log(menuData)
+  // Check if it's Friday after 18:00
+  const isBeforeFriday18 = isFriday(currentDate) ? currentDate.getHours() < 18 : !isAfter(currentDate, addDays(startOfWeek(currentDate, { weekStartsOn: 1 }), 4));
+
   return (
     <div>
       <Navbar />
 
-        {/* Dropdown für die Auswahl des Wochentags */}
-        <div className='flex justify-center'>
-          <Dropdown className='bg-green-300 rounded-lg p-3'>
-            <DropdownTrigger className='p-3 flex items-center'>
-              <Button 
-                className="capitalize flex items-center text-2xl"
-              >
-                {selectedTagDisplay} <SlArrowDown size={13} className='ml-2'/>
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu 
-              aria-label="Dropdown menu with description"
-              //disallowEmptySelection
-              selectionMode="single"
-              selectedKeys={[selectedTag]} // Verwenden Sie den ausgewählten Tag als selectedKeys
-              
-              className="rounded-lg p-3 text-lg"
-            >
-              <DropdownSection title="Aktuelle Woche"  showDivider>
-              
-              {/* Dropdown-Elemente für die Wochentage */}
+      {/* Dropdown for day selection */}
+      <div className='flex justify-center'>
+        <Dropdown className='bg-green-300 rounded-lg p-3'>
+          <DropdownTrigger className='p-3 flex items-center'>
+            <Button className="capitalize flex items-center text-2xl">
+              {selectedTag} <SlArrowDown size={13} className='ml-2' />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu 
+            aria-label="Dropdown menu with description"
+            selectionMode="single"
+            selectedKeys={[selectedTag]}
+            className="rounded-lg p-3 text-lg"
+          >
+            <DropdownSection title="Aktuelle Woche" showDivider>
               {['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'].map(day => (
-                <DropdownItem key={day}  onClick={() => {
-                  setSelectedTag(day); // Setze den ausgewählten Tag
-                  setselectedWeekKey("currentWeek");//Setze ausgewählte Woche auf currentWeek
-                }}className='hover:bg-gray-200 '>
+                <DropdownItem 
+                  key={day}  
+                  onClick={() => {
+                    setSelectedTag(day);
+                    setSelectedWeekKey("currentWeek");
+                  }}
+                  className='hover:bg-gray-200'
+                >
                   {day}
                 </DropdownItem>
               ))}
-              </DropdownSection>
-              <DropdownSection title="Kommende Woche" >
-              
-              {/* Dropdown-Elemente für die Wochentage */}
+            </DropdownSection>
+            <DropdownSection title="Kommende Woche">
               {['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'].map(day => (
-                <DropdownItem  key={`nextWeek_${day}`} onClick={() => {
-                  setSelectedTag(day); // Setze den ausgewählten Tag
-                  setselectedWeekKey("nextWeek");//Setze ausgewählte Woche auf nextWeek
-                }}className='hover:bg-gray-200'>
+                <DropdownItem 
+                  key={`nextWeek_${day}`} 
+                  onClick={() => {
+                    setSelectedTag(day);
+                    setSelectedWeekKey("nextWeek");
+                  }}
+                  className='hover:bg-gray-200'
+                >
                   {day}
                 </DropdownItem>
               ))}
-              </DropdownSection>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-        {isModalOpen && selectedItem && (
-    <Modal param1={selectedItem} closeModal={closeModal} />
-)}
+            </DropdownSection>
+          </DropdownMenu>
+        </Dropdown>
+      </div>
+
+      {/* Modal for item details */}
+      {isModalOpen && selectedItem && (
+        <Modal param1={selectedItem} closeModal={closeModal} />
+      )}
+
+      {/* Menu items display */}
       <div className='max-w-[1640px] mx-auto p-4 py-12 grid md:grid-cols-2 gap-6'>
-        {/* Karten für die Menüpunkte des ausgewählten Tags */}
         {menuData.map((item, index) => (
-  <div key={index} className='relative rounded-xl'>
-    {/* Image */}
-    <img
-      className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
-      src={item.link_fur_image}
-      alt='/'
-    />
-    {/* Overlay */}
-    <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 text-white rounded-xl p-4 flex flex-col justify-between'>
-      {/* Menu Beschreibung */}
-      <div className="flex flex-col justify-between h-full">
-        {/* Name der Speise und Typ */}
-        <div className="flex justify-between">
-          <p className='font-bold text-2xl overflow-hidden'>{item.Name}</p>
-          <p className='text-sm overflow-hidden'>{item.type}</p>
-        </div>
-        {/* Beschreibung */}
-        <p className='text-sm overflow-hidden px-2 text-center flex-grow flex items-center justify-center' style={{alignItems: 'flex-start'}}>{item.Beschreibung}</p>
+          <div key={index} className='relative rounded-xl'>
+            <img
+              className='max-h-[160px] md:max-h-[200px] w-full object-cover rounded-xl'
+              src={item.image}
+              alt='/'
+            />
+            <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 text-white rounded-xl p-4 flex flex-col justify-between'>
+              <div className="flex flex-col justify-between h-full">
+                <div className="flex justify-between">
+                  <p className='font-bold text-2xl'>{item.name}</p>
+                  <p className='text-sm'>{item.type}</p>
+                </div>
+                <p className='text-sm px-2 text-center flex-grow flex items-center justify-center'>
+                  {item.description}
+                </p>
+              </div>
+              {selectedWeekKey === "nextWeek" && (
+                <button
+                  className='bg-green-400 text-white rounded-full w-12 h-12 flex items-center justify-center absolute bottom-2 left-2'
+                  onClick={() => openModal(item)}
+                >
+                  <MdOutlineShoppingCart size={24} />
+                </button>
+              )}
+              <p className='absolute bottom-2 right-2 text-2xl'>{item.price}€</p>
+            </div>
+          </div>
+        ))}
       </div>
-      {/* Shopping Cart Button */}
-      {(selectedWeekKey === "nextWeek") &&  (
-      <button
-        className='bg-green-400 text-white rounded-full w-12 h-12 flex items-center justify-center absolute bottom-2 left-2'
-        onClick={() => openModal(item)}
-      >
-        <MdOutlineShoppingCart size={24} />
-          </button>)
-        }
-      {/* Price */}
-      <p className='absolute bottom-2 right-2 text-2xl'>{item.price}€</p>
-    </div>
-  </div>
-))}
 
-
-
-
-
-
-
-       
-      </div>
+      {/* Breakfast card */}
       <div className='max-w-[820px] mx-auto p-4 py-12 grid md:grid-cols-1 gap-6 justify-center'>
-        <div key="breakfast" className='rounded-xl relative'>
+        <div className='rounded-xl relative'>
           <div className='absolute w-full h-full bg-black/50 rounded-xl text-white'>
-              <p className='font-bold text-2xl px-2 pt-4'>Frühstück</p>
-              <p className='px-2'>Leckeres Frühstück mit verschiedenen Auswahlmöglichkeiten</p>
-              <p className='absolute top-2 right-2  text-gray-300'>Frühstück</p>
-              {(selectedWeekKey == "nextWeek")   && userName  && Friday18 && (
-              <Link href={`/Speiseplan/?modal=true&menudata=${JSON.stringify([selectedTag, selectedDate, "Frühstück"])}&breakfast=true`}>
-                <button className='absolute buttom-2 left-2  text-white p-20 text-4xl transparent-button'><MdOutlineShoppingCart /></button>
+            <p className='font-bold text-2xl px-2 pt-4'>Frühstück</p>
+            <p className='px-2'>Leckeres Frühstück mit verschiedenen Auswahlmöglichkeiten</p>
+            <p className='absolute top-2 right-2 text-gray-300'>Frühstück</p>
+            {selectedWeekKey === "nextWeek" && userName && isBeforeFriday18 && (
+              <Link href={`/Speiseplan/?modal=true&menudata=${JSON.stringify([selectedTag, selectedWeek.find(day => day.weekday === selectedTag)?.date, "Frühstück"])}&breakfast=true`}>
+                <button className='absolute bottom-2 left-2 text-white p-20 text-4xl transparent-button'>
+                  <MdOutlineShoppingCart />
+                </button>
               </Link>
-              )}   
+            )}
           </div>
           <img
-              className='max-h-full md:max-h-[200px] w-full object-cover rounded-xl'
-              src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt='/'
+            className='max-h-full md:max-h-[200px] w-full object-cover rounded-xl'
+            src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt='/'
           />
         </div>
       </div>
