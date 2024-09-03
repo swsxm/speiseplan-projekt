@@ -25,6 +25,9 @@ function ChangeOrders() {
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [isPastDate, setIsPastDate] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | null>(null); 
+  const [messageStatus, setMessageStatus] = useState<number | null>(null); 
+
 
   useEffect(() => {
     const cookies = parseCookies();
@@ -77,7 +80,8 @@ function ChangeOrders() {
     }
   }, [orderItems]);
 
-  async function handleConfirmChanges() {
+
+async function handleConfirmChanges() {
     if (isPastDate) return;
 
     try {
@@ -85,7 +89,7 @@ function ChangeOrders() {
         orderMealId: item.orderMealId, 
         quantity: item.quantity
       }));
-      await fetch("../api/changeOrder", {
+      const res = await fetch("../api/changeOrder", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,12 +97,29 @@ function ChangeOrders() {
         body: JSON.stringify({ updatedMeals, userId: parseCookies().employeeID, date: selectedDate }),
       });
 
-      alert("Bestellungen wurden erfolgreich aktualisiert!");
-      setOrderItems(orderItems.filter(item => item.quantity > 0));
+      const result = await res.json();
+
+      setMessageStatus(res.status); // Set the status for conditional styling
+
+      if (res.ok) {
+        setMessage("Bestellungen wurden erfolgreich aktualisiert!");
+        setOrderItems(orderItems.filter(item => item.quantity > 0));
+      } else {
+        setMessage(result.message || "Fehler beim Aktualisieren der Bestellungen.");
+      }
     } catch (error) {
       console.error("Fehler beim Bestätigen der Änderungen:", error);
+      setMessageStatus(500); // Set to 500 for unexpected errors
+      setMessage("Ein unerwarteter Fehler ist aufgetreten.");
     }
-  }
+}
+
+// In the return statement
+{message && (
+  <div className={`p-4 mb-4 text-white ${messageStatus === 200 ? "bg-green-500" : "bg-red-500"}`}>
+    {message}
+  </div>
+)}
 
   function handleDecreaseQuantity(orderItem: MenuItem) {
     setOrderItems(orderItems.map(item =>
@@ -128,6 +149,11 @@ function ChangeOrders() {
               className="border rounded-md p-2"
             />
           </div>
+          {message && (
+            <div className={`p-4 mb-4 text-white ${messageStatus === 200 ? "bg-green-500" : "bg-red-500"}`}>
+                {message}
+            </div>
+            )}
         </div>
       </section>
 

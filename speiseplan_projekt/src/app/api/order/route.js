@@ -4,9 +4,7 @@ import Order from "@/models/orders";
 import { verifyUser } from "../../../lib/verifyToken";
 
 export async function POST(req) {
-    /**
-     * Order logic here
-     */
+    
   try {
     const check = await verifyUser(req);
     if (check instanceof NextResponse) {

@@ -97,3 +97,40 @@ export function showError(response) {
         popup.remove();
     }, 3000);
 }
+
+export function validateDate(date) {
+/**
+ * Validates the date for changing orders
+ */
+    const inputDate = new Date(date);
+    
+    // Check if the input date is in the past
+    const now = new Date();
+    if (inputDate < now) {
+        return false;
+    }
+
+    // Check if the input date is after Thursday 6pm of this week
+    const thursday = new Date();
+    thursday.setDate(thursday.getDate() + (4 - thursday.getDay())); // Get this week's Thursday
+    thursday.setHours(18, 0, 0, 0); // Set time to 6pm
+
+    if (inputDate > thursday && inputDate <= getNextSundayMidnight(thursday)) {
+        return false;
+    }
+    // Check if the date is in the current week
+    const currentWeekStart = new Date(now.setDate(now.getDate() - now.getDay() + 1)); // Get Monday of the current week
+    const currentWeekEnd = new Date(now.setDate(now.getDate() - now.getDay() + 7)); // Get Sunday of the current week
+
+    if (inputDate >= currentWeekStart && inputDate <= currentWeekEnd) {
+        return false;
+    }
+    return true;
+}
+
+function getNextSundayMidnight(thursday) {
+    const sunday = new Date(thursday);
+    sunday.setDate(thursday.getDate() + (7 - thursday.getDay())); // Next Sunday
+    sunday.setHours(0, 0, 0, 0); // Set time to midnight
+    return sunday;
+}

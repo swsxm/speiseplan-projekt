@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectMongoDB } from "@/lib/mongodb";
 import Order from "@/models/orders";
 import { verifyUser } from "../../../lib/verifyToken";
+import { validateDate } from "../../../lib/validationHelpers";
 
 export async function POST(req) {
     /**
@@ -24,6 +25,10 @@ export async function POST(req) {
             return NextResponse.json({ message: "Invalid date provided." }, { status: 400 });
         }
         targetDate.setUTCHours(0, 0, 0, 0);
+
+        if (!validateDate(targetDate)) {
+            return NextResponse.json({ message: "Provided date is not valid for ordering." }, { status: 400 });
+        }
 
         await connectMongoDB();
 
