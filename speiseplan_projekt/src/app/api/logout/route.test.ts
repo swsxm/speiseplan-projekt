@@ -4,7 +4,7 @@
 import { POST } from "@/app/api/logout/route"; 
 import { NextResponse } from "next/server";
 
-// Mocking NextResponse
+// Mocking NextResponse to control its behavior in the tests
 jest.mock("next/server", () => ({
   NextResponse: {
     json: jest.fn(),
@@ -17,7 +17,7 @@ describe("POST /api/logout", () => {
   });
 
   it("should return status 200 and clear cookies if logout is successful", async () => {
-    // Arrange
+    // Arrange: Setting up mock response and cookie behavior
     const mockJsonResponse = {
       json: jest.fn().mockReturnThis(),
       cookies: {
@@ -26,10 +26,10 @@ describe("POST /api/logout", () => {
     };
     (NextResponse.json as jest.Mock).mockReturnValue(mockJsonResponse);
 
-    // Act
+    // Act: Trigger the POST logout function
     const response = await POST();
 
-    // Assert
+    // Assert: Check if the response includes the correct message and cookies are cleared
     expect(NextResponse.json).toHaveBeenCalledWith(
       {
         message: "Logout successful",
@@ -46,7 +46,7 @@ describe("POST /api/logout", () => {
   });
 
   it("should return status 500 if there is an error", async () => {
-    // Simulate an error by throwing an exception when setting cookies
+    // Simulate an error during cookie setting to test error handling
     const mockJsonResponse = {
       json: jest.fn().mockReturnThis(),
       cookies: {
@@ -57,13 +57,13 @@ describe("POST /api/logout", () => {
     };
     (NextResponse.json as jest.Mock).mockReturnValue(mockJsonResponse);
 
-    // Act
+    // Act: Trigger the POST logout function
     const response = await POST();
 
-    // Assert
+    // Assert: Check if the error response is generated with the correct status and message
     expect(NextResponse.json).toHaveBeenCalledWith(
       { error: "Internal error" },
       { status: 500 }
     );
-});
+  });
 });

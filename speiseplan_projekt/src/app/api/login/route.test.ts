@@ -31,9 +31,11 @@ describe("POST /api/login", () => {
   });
 
   it("should return status 400 if the user is not found", async () => {
+    // Mocking Users.findOne to return null, simulating a non-existent user
     (Users.findOne as jest.Mock).mockResolvedValue(null);
 
     const req = {
+      // Mocking the request to simulate input data
       json: jest.fn().mockResolvedValue({ id: "test-id", password: "test-password" }),
     } as unknown as NextRequest;
 
@@ -46,11 +48,15 @@ describe("POST /api/login", () => {
   });
 
   it("should return status 400 if the password is invalid", async () => {
+    // Simulating a found user with a hashed password
     const mockUser = { employee_id: "test-id", password: "hashed-password" };
     (Users.findOne as jest.Mock).mockResolvedValue(mockUser);
+    
+    // Mocking bcrypt.compare to simulate an incorrect password
     (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
     const req = {
+      // Mocking the request to simulate input data
       json: jest.fn().mockResolvedValue({ id: "test-id", password: "test-password" }),
     } as unknown as NextRequest;
 
@@ -63,6 +69,7 @@ describe("POST /api/login", () => {
   });
 
   it("should return status 201 and set cookies if login is successful", async () => {
+    // Simulating a found user with all necessary data
     const mockUser = {
       employee_id: "test-id",
       password: "hashed-password",
@@ -71,10 +78,15 @@ describe("POST /api/login", () => {
       admin: true,
     };
     (Users.findOne as jest.Mock).mockResolvedValue(mockUser);
+    
+    // Mocking bcrypt.compare to simulate a successful password match
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+    
+    // Mocking jwt.sign to return a dummy token
     (jwt.sign as jest.Mock).mockReturnValue("mockToken");
 
     const req = {
+      // Mocking the request to simulate input data
       json: jest.fn().mockResolvedValue({ id: "test-id", password: "test-password" }),
     } as unknown as NextRequest;
 
@@ -84,16 +96,19 @@ describe("POST /api/login", () => {
 
     expect(response.status).toBe(201);
     expect(jsonResponse.message).toBe("Login successful");
+    
     expect(response.cookies.get("token")?.value).toEqual("mockToken");
     expect(response.cookies.get("name")?.value).toEqual(mockUser.name);
   });
 
   it("should return status 500 if there is an error", async () => {
+    // Mocking Users.findOne to throw an error, simulating a database failure
     (Users.findOne as jest.Mock).mockImplementation(() => {
       throw new Error("Database error");
     });
 
     const req = {
+      // Mocking the request to simulate input data
       json: jest.fn().mockResolvedValue({ id: "test-id", password: "test-password" }),
     } as unknown as NextRequest;
 
