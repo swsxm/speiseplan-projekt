@@ -16,11 +16,10 @@ interface MenuItem {
   date: string;
 }
 
-
-function cart() {
-/**
- * Shopping cart logic
- */
+function Cart() {
+  /**
+   * Shopping cart logic
+   */
   const [cartItems, setCartItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState<number>(0);
@@ -33,13 +32,16 @@ function cart() {
         setLoading(false); 
         return [];
       }
-  
+
       try {
         const parsedData: MenuItem[] = JSON.parse(rawDataFromLocalStorage);
 
         // Check if parsedData is an array and contains valid items
         if (Array.isArray(parsedData)) {
           setCartItems(parsedData);
+          parsedData.forEach(item => {
+          });
+
         } else {
           console.warn("Unerwartete Datenstruktur im Local Storage gefunden");
           setCartItems([]); // Set empty cart if the structure is unexpected
@@ -51,31 +53,31 @@ function cart() {
         setLoading(false); 
       }
     };
-  
+
     loadFromLocalStorage();
   }, []);
-  
+
   function removeItemFromCart(idToRemove: string) {
-  /**
-  * Removes the Item based on the Object_ID
-  */
+    /**
+     * Removes the Item based on the Object_ID
+     */
     try {
       const rawDataFromLocalStorage = localStorage.getItem('cartItems');
       if (rawDataFromLocalStorage) {
         const rawData: MenuItem[] = JSON.parse(rawDataFromLocalStorage);
         const updatedRawData = rawData.filter(item => item._id !== idToRemove);
         localStorage.setItem('cartItems', JSON.stringify(updatedRawData));
-        window.location.reload();
+        setCartItems(updatedRawData); // Update the state instead of reloading the page
       }
     } catch (error) {
       console.error('Fehler beim Parsen der Daten aus dem Local Storage:', error);
     }
-  };
-  
+  }
+
   function increaseQuantity(id: string) {
-  /**
-   * Increase the quantity of the item
-   */
+    /**
+     * Increase the quantity of the item
+     */
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id) {
         return { ...item, quantity: item.quantity + 1 };
@@ -83,13 +85,12 @@ function cart() {
       return item;
     });
     setCartItems(updatedCartItems);
-  };
-  
-  
+  }
+
   function decreaseQuantity(id: string) {
-  /**
-   * Decreases the quantity of the Item
-   */
+    /**
+     * Decreases the quantity of the Item
+     */
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
@@ -97,39 +98,35 @@ function cart() {
       return item;
     });
     setCartItems(updatedCartItems);
-  };
-  
- 
+  }
+
   function calculateTotalPrice() {
-   /**
-   * Calculates the total price of all items combined
-   */
+    /**
+     * Calculates the total price of all items combined
+     */
     let totalPrice = 0;
     for (const item of cartItems) {
       totalPrice += item.price * item.quantity;
     }
     return parseFloat(totalPrice.toFixed(2));
-  };
+  }
 
   useEffect(() => {
     setTotalPrice(calculateTotalPrice());
   }, [cartItems]);
 
-  
   function clearCart() {
-  /**
-   * Clears the local storage, deletes the whole cart
-   */
+    /**
+     * Clears the local storage, deletes the whole cart
+     */
     setCartItems([]);
     localStorage.removeItem('cartItems');
-    window.location.reload();
-  };
+  }
 
-  
   async function handleContinue() {
-  /**
-   * Created the order request
-   */
+    /**
+     * Created the order request
+     */
     try {
       const ordered_meals_id = cartItems.map(item => ({
         quantity: item.quantity,
@@ -159,7 +156,7 @@ function cart() {
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   return (
     <div>
@@ -191,7 +188,7 @@ function cart() {
                             <span>{cartItem.quantity}</span>
                             <button onClick={() => increaseQuantity(cartItem._id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md ml-2">+</button>
                           </div>
-                          <div>{cartItem.date}</div>
+                          <div>{cartItem.date}</div> {/* Display the date */}
                         </div>
                         <div className="flex-none">
                           <p className="font-semibold">{(cartItem.price * cartItem.quantity).toFixed(2)} €</p>
@@ -232,6 +229,6 @@ function cart() {
       )}
     </div>
   );
-};
+}
 
-export default cart;
+export default Cart;

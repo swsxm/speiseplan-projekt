@@ -39,8 +39,11 @@ export async function POST(req) {
             { message: "Login successful" },
             { status: 201 }
         );
-        response.cookies.set("token", token, { httpOnly: true });
-        response.cookies.set("name", user.name);
+        response.cookies.set("token", token, {httpOnly: true});
+        response.cookies.set("name", user.name)
+        response.cookies.set("employeeID", user.employee_id)
+        console.log(user.name);
+
         
         return response;
     } catch (e) {
