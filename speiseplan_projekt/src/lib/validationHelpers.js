@@ -61,11 +61,17 @@ export function validateEmail(email) {
 
  
 export function validateUrl(url) {
-/** 
- * Validates a correct URL format
- */
+    /** 
+     * Validates that the URL is either http or https
+     */
     try {
-        new URL(url);
+        const parsedUrl = new URL(url);
+
+        // Check if the protocol is either 'http:' or 'https:'
+        if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+            return 'URL must start with http:// or https://';
+        }
+
         return null; 
     } catch (e) {
         return 'URL is not valid: ' + url;
