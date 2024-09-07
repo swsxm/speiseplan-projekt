@@ -23,7 +23,7 @@ Um das Projekt lokal zu starten, folge diesen Schritten:
 
 Das Projekt basiert auf der folgenden Architektur:
 
-![Architekturdiagramm](./images/DiagrammArchitekturNextJS.jpg)
+![Architekturdiagramm](speiseplan_projekt/images/DiagrammArchitekturNextJS.jpg)
 
 
 ## Projektstruktur
