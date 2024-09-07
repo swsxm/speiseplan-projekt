@@ -3,7 +3,7 @@
 
 ## Einleitung
 
-Willkommen zum **Speiseplan-Projekt**. Diese Anwendung wurde mit **Next.js** entwickelt, wird auf **Vercel** gehostet und verwendet **MongoDB**, die auf **AWS** gehostet ist. Sie dient der Verwaltung von Speiseplänen und ermöglicht die Interaktion mit Benutzern über eine intuitive Benutzeroberfläche.
+Willkommen zum **Speiseplan-Projekt**. Diese Anwendung wurde mit **React, TypeScript, Next.js und Tailwind CSS** entwickelt und verwendet **MongoDB** zur speicherung der Daten. Die Anwendung dient der Verwaltung und Bestellung von Speiseplänen und beinhaltet die Nutzung von Mitarbeitern und Administratoren über eine intuitive Benutzeroberfläche.
 
 ## Setup
 
@@ -23,10 +23,8 @@ Um das Projekt lokal zu starten, folge diesen Schritten:
 
 Das Projekt basiert auf der folgenden Architektur:
 
-![Architekturdiagramm](./path_to/DiagrammArchitekturNextJS.jpg)
+![Architekturdiagramm](./images/DiagrammArchitekturNextJS.jpg)
 
-- **Frontend**: Die Next.js-Anwendung wird auf **Vercel** gehostet und serverseitig gerendert.
-- **Backend**: Der Backend-Server, ebenfalls auf **Vercel**, kommuniziert mit der **MongoDB**-Datenbank auf AWS.
 
 ## Projektstruktur
 
