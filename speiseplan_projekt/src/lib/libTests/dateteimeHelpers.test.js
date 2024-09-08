@@ -1,4 +1,4 @@
-import { calenderWeek, dayOfWeek } from '../datetimeHelpers';
+import { calenderWeek, dayOfWeek, dayNameToNumber } from '../datetimeHelpers';
 
 describe('Date Helper Functions', () => {
   describe('calenderWeek', () => {
@@ -53,6 +53,39 @@ describe('Date Helper Functions', () => {
     it('should handle dates from different months correctly', () => {
       const testDate = new Date('2024-02-29'); 
       expect(dayOfWeek(testDate)).toBe(4); 
+    });
+  });
+  describe('dayNameToNumber Mapping', () => {
+    test('should map "Montag" to 1', () => {
+      expect(dayNameToNumber["Montag"]).toBe(1);
+    });
+  
+    test('should map "Dienstag" to 2', () => {
+      expect(dayNameToNumber["Dienstag"]).toBe(2);
+    });
+  
+    test('should map "Mittwoch" to 3', () => {
+      expect(dayNameToNumber["Mittwoch"]).toBe(3);
+    });
+  
+    test('should map "Donnerstag" to 4', () => {
+      expect(dayNameToNumber["Donnerstag"]).toBe(4);
+    });
+  
+    test('should map "Freitag" to 5', () => {
+      expect(dayNameToNumber["Freitag"]).toBe(5);
+    });
+  
+    test('should map "Samstag" to 6', () => {
+      expect(dayNameToNumber["Samstag"]).toBe(6);
+    });
+  
+    test('should map "Sonntag" to 7', () => {
+      expect(dayNameToNumber["Sonntag"]).toBe(7);
+    });
+  
+    test('should return undefined for invalid day names', () => {
+      expect(dayNameToNumber["InvalidDay"]).toBeUndefined();
     });
   });
 });
