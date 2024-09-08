@@ -35,7 +35,6 @@ function validateName(name) {
  * Validates the name for length and whether it is alphanumeric with optional last name.
  */
     const isName = /^[A-Za-zÄÖÜäöüß]+(?: [A-Za-zÄÖÜäöüß]+)*$/; // Regex for names with optional last name
-    const isName = /^[A-Za-zÄÖÜäöüß]+(?: [A-Za-zÄÖÜäöüß]+)*$/; 
 
     const lengthError = validateLength(name, MIN_LENGTH, MAX_LENGTH);
     if (lengthError) return `Name ${lengthError}`;
