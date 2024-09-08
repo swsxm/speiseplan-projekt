@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main  # oder der Name des Branches, auf dem du PRs überwachen möchtest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # oder die Node.js-Version, die du verwendest
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm run test
