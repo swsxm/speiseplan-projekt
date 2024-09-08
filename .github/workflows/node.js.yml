@@ -22,24 +22,21 @@ jobs:
       run: |
         echo "Current working directory:"
         pwd
-        echo "Listing files in the current directory:"
+        echo "Listing files in the root directory:"
         ls -la
+        echo "Listing files in the speiseplan_projekt directory:"
+        ls -la speiseplan_projekt
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ matrix.node-version }} and Install Dependencies
+      working-directory: ./speiseplan_projekt
+      run: |
+        npm ci
+        npm run build --if-present
+        npm test
+
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    
-    - name: Install Dependencies
-      working-directory: ./speiseplan_projekt
-      run: npm ci
-
-    - name: Build
-      working-directory: ./speiseplan_projekt
-      run: npm run build --if-present
-
-    - name: Run Tests
-      working-directory: ./speiseplan_projekt
-      run: npm test
 
