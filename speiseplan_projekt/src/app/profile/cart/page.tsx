@@ -36,38 +36,30 @@ function Cart() {
       try {
         const parsedData: MenuItem[] = JSON.parse(rawDataFromLocalStorage);
 
-        // Check if parsedData is an array and contains valid items
         if (Array.isArray(parsedData)) {
           setCartItems(parsedData);
-          parsedData.forEach(item => {
-          });
-
         } else {
           console.warn("Unerwartete Datenstruktur im Local Storage gefunden");
-          setCartItems([]); // Set empty cart if the structure is unexpected
+          setCartItems([]);
         }
-
-        setLoading(false); 
+        setLoading(false);
       } catch (error) {
         console.error("Fehler beim Parsen der Daten aus dem Local Storage:", error);
-        setLoading(false); 
+        setLoading(false);
       }
-    };
+    }
 
     loadFromLocalStorage();
   }, []);
 
   function removeItemFromCart(idToRemove: string) {
-    /**
-     * Removes the Item based on the Object_ID
-     */
     try {
       const rawDataFromLocalStorage = localStorage.getItem('cartItems');
       if (rawDataFromLocalStorage) {
         const rawData: MenuItem[] = JSON.parse(rawDataFromLocalStorage);
         const updatedRawData = rawData.filter(item => item._id !== idToRemove);
         localStorage.setItem('cartItems', JSON.stringify(updatedRawData));
-        setCartItems(updatedRawData); // Update the state instead of reloading the page
+        setCartItems(updatedRawData); // Aktualisieren des Zustands
       }
     } catch (error) {
       console.error('Fehler beim Parsen der Daten aus dem Local Storage:', error);
@@ -75,9 +67,6 @@ function Cart() {
   }
 
   function increaseQuantity(id: string) {
-    /**
-     * Increase the quantity of the item
-     */
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id) {
         return { ...item, quantity: item.quantity + 1 };
@@ -88,9 +77,6 @@ function Cart() {
   }
 
   function decreaseQuantity(id: string) {
-    /**
-     * Decreases the quantity of the Item
-     */
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
@@ -101,9 +87,6 @@ function Cart() {
   }
 
   function calculateTotalPrice() {
-    /**
-     * Calculates the total price of all items combined
-     */
     let totalPrice = 0;
     for (const item of cartItems) {
       totalPrice += item.price * item.quantity;
@@ -116,17 +99,11 @@ function Cart() {
   }, [cartItems]);
 
   function clearCart() {
-    /**
-     * Clears the local storage, deletes the whole cart
-     */
     setCartItems([]);
     localStorage.removeItem('cartItems');
   }
 
   async function handleContinue() {
-    /**
-     * Created the order request
-     */
     try {
       const ordered_meals_id = cartItems.map(item => ({
         quantity: item.quantity,
@@ -143,15 +120,12 @@ function Cart() {
       });
       const pdfBlob = await generatePDF(cartItems);
       const pdfUrl = URL.createObjectURL(pdfBlob);
-
       const link = document.createElement('a');
       link.href = pdfUrl;
       link.setAttribute('download', 'bestelluebersicht.pdf');
-
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
       clearCart();
     } catch (error) {
       console.log(error);
@@ -168,7 +142,6 @@ function Cart() {
           </h2>
         </div>
       </section>
-
       {!loading && cartItems.length > 0 && (
         <section className="py-10">
           <div className="container max-w-screen-xl mx-auto px-4">
@@ -188,7 +161,7 @@ function Cart() {
                             <span>{cartItem.quantity}</span>
                             <button onClick={() => increaseQuantity(cartItem._id)} className="px-2 py-1 bg-gray-200 text-gray-600 rounded-md ml-2">+</button>
                           </div>
-                          <div>{cartItem.date}</div> {/* Display the date */}
+                          <div>{cartItem.date}</div>
                         </div>
                         <div className="flex-none">
                           <p className="font-semibold">{(cartItem.price * cartItem.quantity).toFixed(2)} €</p>
@@ -213,11 +186,9 @@ function Cart() {
                       </span>
                     </li>
                   </ul>
-
                   <button onClick={handleContinue} className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer">
                     Weiter
                   </button>
-
                   <button onClick={clearCart} className="px-4 py-3 inline-block text-lg w-full text-center font-medium text-red-600 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100">
                     Warenkorb leeren
                   </button>

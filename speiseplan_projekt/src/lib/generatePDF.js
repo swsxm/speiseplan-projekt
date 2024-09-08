@@ -1,4 +1,3 @@
-// generatePDF.js
 import { PDFDocument, rgb } from 'pdf-lib';
 
 // Define and export utility functions
@@ -17,7 +16,6 @@ export function calculateColumnWidths(table, fontSize) {
 export function estimateTextWidth(text, fontSize) {
   return text.length * fontSize * 0.6; // Adjust this factor if needed
 }
-
 
 export function getColumnXOffset(columnIndex, columnWidths, cellPadding) {
   let offset = 0;
@@ -55,14 +53,15 @@ async function generatePDF(cartItems) {
   const tableData = [
     ['Artikel', 'Datum', 'Menge', 'Einzelpreis'],
     ...cartItems.map(item => [
-      item.Name || '',
+      item.name || '',
       item.date || '',
       String(item.quantity || ''),
       `${item.price || ''} €`
     ])
   ];
-
-  const y = drawTable(tableData, tableX, tableY, cellPadding);
+  
+  // Pass page to drawTable
+  const y = drawTable(page, tableData, tableX, tableY, cellPadding);
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
   page.drawText(`Gesamtpreis: ${totalPrice.toFixed(2)} €`, { x: tableX, y, size: 14 });
@@ -71,7 +70,9 @@ async function generatePDF(cartItems) {
   return new Blob([pdfBytes], { type: "application/pdf" });
 }
 
-function drawTable(table, startX, startY, cellPadding) {
+// Updated drawTable function with page as parameter
+function drawTable(page, table, startX, startY, cellPadding) {
+  console.log("Draw table aufgerufen");
   const fontSize = 10;
   const lineHeight = fontSize + cellPadding * 2;
   const columnWidths = calculateColumnWidths(table, fontSize);
