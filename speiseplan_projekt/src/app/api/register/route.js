@@ -8,7 +8,6 @@ import { validateLength, validateNumber, validateEmail } from "../../../lib/vali
 const MIN_LENGTH = 1;
 const MAX_LENGTH = 255;
 
-
 function validatePassword(password) {
 /**
  * Validates the password for length, numbers, uppercase letters, lowercase letters, and special characters.
@@ -31,12 +30,12 @@ function validatePassword(password) {
     return null;
 }
 
-
 function validateName(name) {
 /**
  * Validates the name for length and whether it is alphanumeric with optional last name.
  */
     const isName = /^[A-Za-zÄÖÜäöüß]+(?: [A-Za-zÄÖÜäöüß]+)*$/; // Regex for names with optional last name
+    const isName = /^[A-Za-zÄÖÜäöüß]+(?: [A-Za-zÄÖÜäöüß]+)*$/; 
 
     const lengthError = validateLength(name, MIN_LENGTH, MAX_LENGTH);
     if (lengthError) return `Name ${lengthError}`;
@@ -45,7 +44,6 @@ function validateName(name) {
 
     return null;
 }
-
 
 async function handleValidationErrors(name, email, id, password) {
 /**
@@ -58,8 +56,11 @@ async function handleValidationErrors(name, email, id, password) {
         id: validateNumber(id, 1, 8),
     };
 
-    for (const [field, error] of Object.entries(errors)) {
-        if (error) return { status: 400, error: error };
+    // Collect all errors and return them if any
+    const errorMessages = Object.values(errors).filter(error => error);
+
+    if (errorMessages.length > 0) {
+        return { status: 400, error: errorMessages.join(" ") };
     }
     return null;
 }
@@ -75,25 +76,24 @@ export async function POST(req) {
         
         const validationError = await handleValidationErrors(name, email, id, password);
         if (validationError) {
-            return NextResponse.json(validationError);
+            return NextResponse.json(validationError, { status: 400 });
         }
 
         const admin = false;
         const hashedPassword = await bcrypt.hash(password, 12);
 
         await connectMongoDB();
-
         console.log("Connecting was successful");
+
         const user_exists = await Users.findOne({ employee_id: id }).select("_id");
-        console.log(user_exists);
         if (user_exists) {
-            return NextResponse.json({ status: 400, error: "A user with this ID already exists." });
+            return NextResponse.json({ error: "A user with this ID already exists." }, { status: 400 });
         }
 
         await Users.create({ name, email, employee_id: id, password: hashedPassword, admin });
-        return NextResponse.json({ status: 201 });
+        return NextResponse.json({ message: "User created successfully" }, { status: 201 });
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({ status: 500, error: "An internal server error occurred." });
+        console.error("Error in POST /api/register:", error);
+        return NextResponse.json({ error: "An internal server error occurred." }, { status: 500 });
     }
 }
