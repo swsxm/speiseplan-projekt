@@ -3,7 +3,8 @@ name: CI
 on:
   pull_request:
     branches:
-      - main  # oder der Name des Branches, auf dem du PRs überwachen möchtest
+      - main
+      - dev
 
 jobs:
   build:
@@ -16,7 +17,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # oder die Node.js-Version, die du verwendest
+        node-version: '16' 
 
     - name: Install dependencies
       run: npm install
