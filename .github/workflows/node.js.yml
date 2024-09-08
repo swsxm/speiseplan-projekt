@@ -1,4 +1,4 @@
-name: Node.js CI
+name: JEST Tests
 
 on:
   push:
@@ -23,3 +23,5 @@ jobs:
       run: |
         npm install
         npm run test
+      env:
+        MONGODB_URI: ${{ secrets.MONGO_URI }}
