@@ -59,7 +59,7 @@ function Cart() {
         const rawData: MenuItem[] = JSON.parse(rawDataFromLocalStorage);
         const updatedRawData = rawData.filter(item => item._id !== idToRemove);
         localStorage.setItem('cartItems', JSON.stringify(updatedRawData));
-        setCartItems(updatedRawData); // Aktualisieren des Zustands
+        setCartItems(updatedRawData);
       }
     } catch (error) {
       console.error('Fehler beim Parsen der Daten aus dem Local Storage:', error);
