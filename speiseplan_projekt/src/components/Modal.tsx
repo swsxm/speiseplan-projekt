@@ -14,39 +14,31 @@ interface MenuItem {
 }
 
 interface ModalProps {
-  param1: MenuItem | null; // Define prop type as MenuItem or null
+  param1: MenuItem | null;
   closeModal: () => void;
 }
 
 const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
-  const [itemAdded, setItemAdded] = useState(false); // Zustand, um zu überprüfen, ob das Element bereits hinzugefügt wurde
+  const [itemAdded, setItemAdded] = useState(false);
 
   function addToCart() {
     if (param1) {
-      // Erstelle eine Kopie von param1 mit quantity: 1
       const itemWithQuantity: MenuItem = { ...param1, quantity: 1 };
-      
-      // Aktuelle Liste aus dem Local Storage abrufen
       const currentCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
-      
-      // Überprüfe, ob das Element bereits im Warenkorb ist
       const isItemInCart = currentCart.some((item: MenuItem) => item._id === itemWithQuantity._id);
       
       if (!isItemInCart) {
-        // Füge das neue Element zur Liste hinzu
         const updatedCart = [...currentCart, itemWithQuantity];
-        // Aktualisierte Liste im Local Storage speichern
         localStorage.setItem('cartItems', JSON.stringify(updatedCart));
         setItemAdded(true); 
         closeModal();
       } else {
-        setItemAdded(true); // Setze den Zustand, um anzuzeigen, dass das Element bereits im Warenkorb ist
+        setItemAdded(true); 
       }
     }
   };
   
-  if (!param1) return null; // Render nothing if param1 is null
-  
+  if (!param1) return null; 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
