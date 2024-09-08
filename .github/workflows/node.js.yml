@@ -21,4 +21,5 @@ jobs:
     - name: Test
       working-directory: ./speiseplan_projekt
       run: |
+        npm install
         npm run test
