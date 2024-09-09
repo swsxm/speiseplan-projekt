@@ -22,6 +22,9 @@ const Modal: React.FC<ModalProps> = ({ param1, closeModal }) => {
   const [itemAdded, setItemAdded] = useState(false);
 
   function addToCart() {
+    /**
+     * Adding menuItem to local storage after confirmation by user
+     */
     if (param1) {
       const itemWithQuantity: MenuItem = { ...param1, quantity: 1 };
       const currentCart = JSON.parse(localStorage.getItem('cartItems') || '[]');

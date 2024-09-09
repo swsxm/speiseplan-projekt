@@ -60,7 +60,6 @@ async function generatePDF(cartItems) {
     ])
   ];
   
-  // Pass page to drawTable
   const y = drawTable(page, tableData, tableX, tableY, cellPadding);
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
@@ -70,7 +69,6 @@ async function generatePDF(cartItems) {
   return new Blob([pdfBytes], { type: "application/pdf" });
 }
 
-// Updated drawTable function with page as parameter
 function drawTable(page, table, startX, startY, cellPadding) {
   console.log("Draw table aufgerufen");
   const fontSize = 10;
