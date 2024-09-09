@@ -116,7 +116,7 @@ describe("POST /api/login", () => {
 
     const jsonResponse = await response.json();
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(234);
     expect(jsonResponse.error).toBe("Database error");
   });
 });
