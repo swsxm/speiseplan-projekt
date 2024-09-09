@@ -70,7 +70,6 @@ async function generatePDF(cartItems) {
 }
 
 function drawTable(page, table, startX, startY, cellPadding) {
-  console.log("Draw table aufgerufen");
   const fontSize = 10;
   const lineHeight = fontSize + cellPadding * 2;
   const columnWidths = calculateColumnWidths(table, fontSize);
