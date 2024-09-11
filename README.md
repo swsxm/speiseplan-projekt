@@ -71,7 +71,7 @@ Die Datenmodelle, die die Struktur der in MongoDB gespeicherten Daten definieren
 
 ### 6. Tests
 
-Die Tests befinden sich in `src/libTests` und prüfen die Funktionen in `src/lib`.
+Die Tests für die LIB befinden sich im Ordner `src/lib/libTests`. Alle anderen Tests befinden sich im selben Verzeichnis der zu testenden Datei.
 
 - Beispiel: `mongodb.test.js` testet die Interaktionen mit der MongoDB-Datenbank.
 
