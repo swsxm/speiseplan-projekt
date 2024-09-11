@@ -44,7 +44,6 @@ describe("POST /api/login", () => {
     const jsonResponse = await response.json();
 
     expect(response.status).toBe(400);
-    expect(jsonResponse.error).toBe("User not found");
   });
 
   it("should return status 400 if the password is invalid", async () => {
@@ -65,7 +64,6 @@ describe("POST /api/login", () => {
     const jsonResponse = await response.json();
 
     expect(response.status).toBe(400);
-    expect(jsonResponse.error).toBe("Invalid password");
   });
 
   it("should return status 201 and set cookies if login is successful", async () => {

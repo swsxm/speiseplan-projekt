@@ -13,7 +13,7 @@ export async function POST(req) {
 
         if (!user) {
             return NextResponse.json(
-                { error: "User not found" },
+                { message: "" },
                 { status: 400 }
             );
         }
@@ -21,7 +21,7 @@ export async function POST(req) {
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
             return NextResponse.json(
-                { error: "Invalid password" },
+                { message: "" },
                 { status: 400 }
             );
         }
