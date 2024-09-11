@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function registerForm() {
+export default function RegisterForm() {
   const [name, setName] = useState("");
   const [id, setId] = useState("");
   const [email, setEmail] = useState("");
@@ -18,14 +18,14 @@ export default function registerForm() {
    * Register logic
    */
     e.preventDefault();
-    // Check password safety  
+    // Check if all fields are filled
     if (!name || !email || !password || !id) {
       setError("All fields are necessary.");
       return;
     }
     try {
       // Create User
-      const res = await fetch("api/register", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,24 +37,25 @@ export default function registerForm() {
           password,
         }),
       });
-      const status = await res.json();
-      console.log(status.status);
-      if (status.status === 201) {
+
+      // Check response status
+      const result = await res.json();
+
+      if (res.ok) { // Use res.ok to check for successful status codes (2xx)
         const form = e.currentTarget;
         if (form instanceof HTMLFormElement) {
           form.reset();
         }
         router.push("/");
-      } else if (status.status === 400) {
-        setError(status.error);
       } else {
-        console.log(status.status);
-        setError("Error");
+        // Handle errors
+        setError(result.error || "An error occurred");
       }
     } catch (error) {
-      console.log("Error during registration: ", error);
+      console.error("Error during registration:", error);
+      setError("An error occurred during registration.");
     }
-  };
+  }
 
   return (
     <div>
