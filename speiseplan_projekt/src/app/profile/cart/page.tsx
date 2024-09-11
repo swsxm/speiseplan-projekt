@@ -53,6 +53,9 @@ function Cart() {
   }, []);
 
   function removeItemFromCart(idToRemove: string) {
+    /**
+     * Removes the Item based on the Object_ID
+     */
     try {
       const rawDataFromLocalStorage = localStorage.getItem('cartItems');
       if (rawDataFromLocalStorage) {
@@ -67,6 +70,9 @@ function Cart() {
   }
 
   function increaseQuantity(id: string) {
+    /**
+     * Increase the quantity of the item
+     */
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id) {
         return { ...item, quantity: item.quantity + 1 };
@@ -77,6 +83,9 @@ function Cart() {
   }
 
   function decreaseQuantity(id: string) {
+    /**
+     * Decreases the quantity of the Item
+     */
     const updatedCartItems = cartItems.map((item: MenuItem) => {
       if (item._id === id && item.quantity > 1) {
         return { ...item, quantity: item.quantity - 1 };
@@ -87,6 +96,9 @@ function Cart() {
   }
 
   function calculateTotalPrice() {
+    /**
+     * Calculates the total price of all items combined
+     */
     let totalPrice = 0;
     for (const item of cartItems) {
       totalPrice += item.price * item.quantity;
@@ -99,11 +111,17 @@ function Cart() {
   }, [cartItems]);
 
   function clearCart() {
+    /**
+     * Clears the local storage, deletes the whole cart
+     */
     setCartItems([]);
     localStorage.removeItem('cartItems');
   }
 
   async function handleContinue() {
+    /**
+     * Created the order request
+     */
     try {
       const ordered_meals_id = cartItems.map(item => ({
         quantity: item.quantity,
