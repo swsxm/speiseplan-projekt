@@ -37,7 +37,7 @@ export async function POST(req) {
      */
     let isValidOrder = true;
     ordered_meals_id.forEach(orderedMeal => {
-      const { day, mealId } = orderedMeal;  // Hier mealId anstelle von _id
+      const { day, mealId } = orderedMeal;
       // Convert day name to day number 
       const dayNumber = dayNameToNumber[day];
       if (dayNumber === undefined) {
