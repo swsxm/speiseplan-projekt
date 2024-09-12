@@ -37,7 +37,7 @@ export async function POST(req) {
      */
     let isValidOrder = true;
     ordered_meals_id.forEach(orderedMeal => {
-      const { day, _id } = orderedMeal;
+      const { day, mealId } = orderedMeal;  // Hier mealId anstelle von _id
       // Convert day name to day number 
       const dayNumber = dayNameToNumber[day];
       if (dayNumber === undefined) {
@@ -45,12 +45,12 @@ export async function POST(req) {
         return;
       }
       // Validate mealId
-      if (!_id) {
+      if (!mealId) {
         isValidOrder = false;
         return;
       }
       // Ensure the day exists in the plan and contains the ordered mealId
-      if (!plansByDay[dayNumber] || !plansByDay[dayNumber].includes(_id.toString())) {
+      if (!plansByDay[dayNumber] || !plansByDay[dayNumber].includes(mealId.toString())) {
         isValidOrder = false;
       }
     });
@@ -74,6 +74,7 @@ export async function POST(req) {
         };
       })
     });
+
     return NextResponse.json({ status: 201, message: "Order created successfully" });
   } catch (error) {
     console.error("Error creating order:", error);

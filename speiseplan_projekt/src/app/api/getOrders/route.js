@@ -24,7 +24,6 @@ export async function POST(req) {
             return NextResponse.json({ message: "Invalid date provided." }, { status: 400 });
         }
         date.setUTCHours(0, 0, 0, 0);
-
         await connectMongoDB();
 
         /**
