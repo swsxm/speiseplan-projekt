@@ -92,12 +92,16 @@ export default function speiseplan() {
   }, [selectedTag, selectedWeekKey]);
 
   function openModal(item: MenuItem) {
+   /**
+    * Open Modal
+    */
+   console.log(item.price);
     item.day = selectedTag;
     item.date = selectedWeek.find(day => day.weekday === selectedTag)?.date || '';
+    item.quantity = 1;
     setSelectedItem(item);
     setIsModalOpen(true);
   };
-
   function closeModal () {
     setIsModalOpen(false);
   };

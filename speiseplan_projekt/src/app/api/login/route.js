@@ -3,6 +3,7 @@ import { connectMongoDB } from "@/lib/mongodb";
 import Users from "@/models/users";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { error } from 'console';
 
 export async function POST(req) {  
     try {
@@ -13,7 +14,7 @@ export async function POST(req) {
 
         if (!user) {
             return NextResponse.json(
-                { error: "User not found" },
+                { error: "Invalid Credentials" },
                 { status: 400 }
             );
         }
@@ -21,7 +22,7 @@ export async function POST(req) {
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
             return NextResponse.json(
-                { error: "Invalid password" },
+                { error: "Invalid Credentials" },
                 { status: 400 }
             );
         }
@@ -39,8 +40,11 @@ export async function POST(req) {
             { message: "Login successful" },
             { status: 201 }
         );
-        response.cookies.set("token", token, { httpOnly: true });
-        response.cookies.set("name", user.name);
+        response.cookies.set("token", token, {httpOnly: true});
+        response.cookies.set("name", user.name)
+        response.cookies.set("employeeID", user.employee_id)
+        console.log(user.name);
+
         
         return response;
     } catch (e) {
