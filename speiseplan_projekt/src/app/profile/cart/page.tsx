@@ -127,8 +127,9 @@ function Cart() {
         quantity: item.quantity,
         date: item.date,
         day: item.day,
-        _id: item._id
+        mealId: item._id
       }));
+  
       const res = await fetch("../api/order", {
         method: "POST",
         headers: {
@@ -136,6 +137,7 @@ function Cart() {
         },
         body: JSON.stringify({ ordered_meals_id }),
       });
+  
       const pdfBlob = await generatePDF(cartItems);
       const pdfUrl = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
@@ -149,6 +151,7 @@ function Cart() {
       console.log(error);
     }
   }
+  
 
   return (
     <div>
