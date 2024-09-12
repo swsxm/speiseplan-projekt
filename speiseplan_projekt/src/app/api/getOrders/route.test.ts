@@ -11,9 +11,11 @@ import { NextRequest } from "next/server";
 jest.mock("../../../lib/verifyToken", () => ({
   verifyUser: jest.fn(),
 }));
+
 jest.mock("@/models/orders", () => ({
   aggregate: jest.fn(),
 }));
+
 jest.mock("@/lib/mongodb", () => ({
   connectMongoDB: jest.fn(),
 }));
@@ -24,8 +26,10 @@ describe("POST /api/getOrders", () => {
   });
 
   it("should return 400 for invalid date", async () => {
-    // Mock verifyUser
-    (verifyUser as jest.Mock).mockResolvedValue({ id: "userId123" });
+    /**
+     * Test that returns 400 status for invalid date format
+     */
+    (verifyUser as jest.Mock).mockResolvedValue({ id: "userId123" }); // Mock user verification
 
     const req = {
       json: jest.fn().mockResolvedValue({
@@ -36,15 +40,17 @@ describe("POST /api/getOrders", () => {
 
     const response = await getOrderPOST(req);
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(400); // Assert that the status is 400
     const jsonResponse = await response.json();
-    expect(jsonResponse.message).toBe("Invalid date provided.");
+    expect(jsonResponse.message).toBe("Invalid date provided."); // Assert correct error message
   });
 
   it("should return 200 and a message when no orders are found", async () => {
-    // Mock verifyUser and Order aggregate
-    (verifyUser as jest.Mock).mockResolvedValue({ id: "userId123" });
-    (Order.aggregate as jest.Mock).mockResolvedValue([]);
+    /**
+     * Test that returns 200 with a message when no orders are found
+     */
+    (verifyUser as jest.Mock).mockResolvedValue({ id: "userId123" }); // Mock user verification
+    (Order.aggregate as jest.Mock).mockResolvedValue([]); // Mock empty order list
 
     const req = {
       json: jest.fn().mockResolvedValue({
@@ -55,14 +61,16 @@ describe("POST /api/getOrders", () => {
 
     const response = await getOrderPOST(req);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(200); // Assert that the status is 200
     const jsonResponse = await response.json();
-    expect(jsonResponse.message).toBe("No orders found for this user and date.");
+    expect(jsonResponse.message).toBe("No orders found for this user and date."); // Assert correct message
   });
 
   it("should return 200 with orders when they exist", async () => {
-    // Mock verifyUser and Order aggregate
-    (verifyUser as jest.Mock).mockResolvedValue({ id: "userId123" });
+    /**
+     * Test that returns 200 with orders when they exist
+     */
+    (verifyUser as jest.Mock).mockResolvedValue({ id: "userId123" }); // Mock user verification
     (Order.aggregate as jest.Mock).mockResolvedValue([
       {
         orderMealId: "meal123",
@@ -74,7 +82,7 @@ describe("POST /api/getOrders", () => {
         image: "pizza.jpg",
         type: "Menu1",
       },
-    ]);
+    ]); // Mock existing order data
 
     const req = {
       json: jest.fn().mockResolvedValue({
@@ -85,7 +93,7 @@ describe("POST /api/getOrders", () => {
 
     const response = await getOrderPOST(req);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(200); // Assert that the status is 200
     const jsonResponse = await response.json();
     expect(jsonResponse).toEqual([
       {
@@ -98,6 +106,6 @@ describe("POST /api/getOrders", () => {
         image: "pizza.jpg",
         type: "Menu1",
       },
-    ]);
+    ]); // Assert that the correct order data is returned
   });
 });
