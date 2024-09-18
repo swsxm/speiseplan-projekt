@@ -14,7 +14,7 @@ interface Menu {
   totalPrice: number;
 }
 
-export default function admin() {
+export default function Admin() {
   const [currentPath, setCurrentPath] = useState('/');
   const [menuItems, setMenuItems] = useState<Menu[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);

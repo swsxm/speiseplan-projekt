@@ -1,6 +1,6 @@
 import React from "react";
 
-const footer = () => {
+const Footer = () => {
   const REDIRECT_PAGE = '/info'
   return (
     <footer className="rounded-lg shadow m-4 max-w-[1640px] mx-auto p-4">
@@ -31,4 +31,4 @@ const footer = () => {
   );
 };
 
-export default footer;
+export default Footer;

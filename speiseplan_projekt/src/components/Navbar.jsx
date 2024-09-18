@@ -6,7 +6,7 @@ import Link from "next/link";
 import { parseCookies } from 'nookies';
 import { useRouter } from 'next/navigation';
 
-export default function navbar() {
+export default function Navbar() {
     const [nav, setNav] = useState(false);
     const [userName, setUserName] = useState('');
     const [isAdmin, setIsAdmin] = useState(false);

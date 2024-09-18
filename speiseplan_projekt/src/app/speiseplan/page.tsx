@@ -18,7 +18,7 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 import { format, startOfWeek, addDays, isAfter, isFriday } from 'date-fns';
 import { de } from 'date-fns/locale';
 
-export default function speiseplan() {
+export default function Speiseplan() {
   interface MenuItem {
     _id: string;
     id: number;
