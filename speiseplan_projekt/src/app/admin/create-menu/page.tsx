@@ -6,7 +6,7 @@ import CreateMealModal from '@/components/CreateMealModal';
 import { FaRegPlusSquare } from "react-icons/fa";
 import { startOfWeek, addDays, format } from 'date-fns';
 
-export default function speiseplan() {
+export default function Speiseplan() {
   const currentDate = new Date();
   const startOfCurrentWeek = startOfWeek(currentDate, { weekStartsOn: 1 });
   const startOfNewWeek = addDays(startOfCurrentWeek, 14);
