@@ -103,8 +103,8 @@ describe("POST /api/changeOrder", () => {
     const response = await changeOrderPOST(req);
   
     expect(mockOrder.orderedMeals.pull).toHaveBeenCalledWith({ _id: "meal123" });
-    expect(Order.findByIdAndDelete).toHaveBeenCalledWith("order123"); // Check if the order is deleted
-    expect(response.status).toBe(200); // Successful response
+    expect(Order.findByIdAndDelete).toHaveBeenCalledWith("order123");
+    expect(response.status).toBe(200);
   });
   
 });

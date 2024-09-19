@@ -24,6 +24,7 @@
     "lucide-react": "^0.362.0",
     "mongoose": "^8.2.3",
     "next": "14.1.4",
+    "next-router-mock": "^0.9.13",
     "nookies": "^2.5.2",
     "pdf-lib": "^1.17.1",
     "react": "^18",
