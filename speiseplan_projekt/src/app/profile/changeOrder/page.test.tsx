@@ -20,8 +20,11 @@ jest.mock('next/router', () => ({
 }));
 
 // Mock Navbar component
-jest.mock('@/components/Navbar', () => () => <div>Mocked Navbar</div>);
-
+jest.mock('@/components/Navbar', () => {
+    const MockedNavbar = () => <div>Mocked Navbar</div>;
+    MockedNavbar.displayName = 'MockedNavbar';
+    return MockedNavbar;
+  });
 describe('ChangeOrders Page', () => {
   beforeEach(() => {
     // Reset mock for `useRouter`
