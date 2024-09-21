@@ -26,8 +26,8 @@ export async function POST(req) {
 
             /* Find and update the Plan with the new Meal */
             const updatedPlan = await Plan.findOneAndUpdate(
-                { "week-id": weekNumber, "day-number": dayNumber, "meal-ids": itemToUpdateId },
-                { $set: { "meal-ids.$[elem]": newItemId } },
+                { "weekId": weekNumber, "dayNumber": dayNumber, "mealIds": itemToUpdateId },
+                { $set: { "mealIds.$[elem]": newItemId } },
                 { 
                     arrayFilters: [{ "elem": itemToUpdateId }], 
                     new: true 
@@ -42,8 +42,8 @@ export async function POST(req) {
 
         } else {
             const updatedPlan = await Plan.findOneAndUpdate(
-                { "week-id": weekNumber, "day-number": dayNumber },
-                { $push: { "meal-ids": newItemId } },
+                { "weekId": weekNumber, "dayNumber": dayNumber },
+                { $push: { "mealIds": newItemId } },
                 { new: true }
             );
             if (!updatedPlan) {

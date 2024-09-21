@@ -15,7 +15,7 @@ const usersSchema = new Schema({
         type: String,
         required: true,
     },
-    employee_id: {
+    employeeId: {
         type: Number,
         required: true,
     },

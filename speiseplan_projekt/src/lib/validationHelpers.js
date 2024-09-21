@@ -134,7 +134,7 @@ export function validateDate(date) {
     return true;
 }
 
-function getNextSundayMidnight(thursday) {
+export function getNextSundayMidnight(thursday) {
     const sunday = new Date(thursday);
     sunday.setDate(thursday.getDate() + (7 - thursday.getDay())); // Next Sunday
     sunday.setHours(0, 0, 0, 0); // Set time to midnight

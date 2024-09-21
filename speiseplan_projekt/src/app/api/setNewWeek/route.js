@@ -17,7 +17,7 @@ export async function POST(req) {
         const week_number = getISOWeek(currentDate) + 2;
 
         // Check if plans for the week already exist
-        const existingPlans = await Plan.find({ "week-id": week_number }).exec();
+        const existingPlans = await Plan.find({ "weekId": week_number }).exec();
 
         if (existingPlans.length > 0) {
             console.log(`Plans for week ${week_number} already exist in the database.`);
@@ -28,9 +28,9 @@ export async function POST(req) {
         const days = [1, 2, 3, 4, 5, 6];
         const newPlans = await Promise.all(days.map(day => 
             Plan.create({
-                "week-id": week_number,
-                "day-number": day,
-                "meal-ids": []
+                "weekId": week_number,
+                "dayNumber": day,
+                "mealIds": []
             })
         ));
 

@@ -1,4 +1,4 @@
-import { validateLength, validateNumber, validateFloat, validateEmail, validateUrl } from '../validationHelpers';
+import { validateLength, validateNumber, validateFloat, validateEmail, validateUrl, validateDate, showError, getNextSundayMidnight } from '../validationHelpers';
 
 /**
  * Tests for Input validation
@@ -115,6 +115,84 @@ describe('Validation and MongoDB Connection Tests', () => {
 
     test('should return error for URL with unsupported protocol', () => {
       expect(validateUrl('asdf://example.com')).toBe('URL must start with http:// or https://');
+    });
+  });
+
+  describe('validateDate', () => {
+    it('should return false if the date is in the past', () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - 1); // One day in the past
+        expect(validateDate(pastDate.toISOString())).toBe(false);
+    });
+
+    it('should return false if the date is after Thursday 6pm of this week', () => {
+        const thursday = new Date();
+        thursday.setDate(thursday.getDate() + (4 - thursday.getDay())); // Get this Thursday
+        thursday.setHours(19, 0, 0, 0); // 7pm (after 6pm)
+        expect(validateDate(thursday.toISOString())).toBe(false);
+    });
+
+    it('should return false if the date is within the current week', () => {
+        const now = new Date();
+        const thisWeekDate = new Date(now.setDate(now.getDate() + (6 - now.getDay()))); // Get a day in the current week
+        expect(validateDate(thisWeekDate.toISOString())).toBe(false);
+    });
+
+    it('should return true for a valid date outside the constraints', () => {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 10); // 10 days in the future
+        expect(validateDate(futureDate.toISOString())).toBe(true);
+    });
+  });
+
+  describe('showError', () => {
+    let createElementSpy;
+    let appendChildSpy;
+    let popupMock;
+
+    beforeEach(() => {
+        // Mock document.createElement
+        popupMock = {
+            style: {},
+            remove: jest.fn(),
+        };
+        createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(popupMock);
+        appendChildSpy = jest.spyOn(document.body, 'appendChild');
+    });
+
+    afterEach(() => {
+        // Restore mocks
+        jest.restoreAllMocks();
+    });
+
+    it('should return null for response status 2xx', () => {
+        const response = { status: 200 };
+        expect(showError(response)).toBeNull();
+    });
+  });
+
+  describe('getNextSundayMidnight', () => {
+    it('should return the correct next Sunday at midnight', () => {
+        // Arrange: Beispiel-Donnerstag
+        const thursday = new Date('2024-09-19T12:00:00'); // Donnerstag, 19. September 2024, 12:00 Uhr
+
+        // Act: Führe die Funktion aus
+        const result = getNextSundayMidnight(thursday);
+
+        // Assert: Überprüfe, dass das Ergebnis korrekt ist
+        const expectedSunday = new Date('2024-09-22T00:00:00'); // Sonntag, 22. September 2024, Mitternacht
+        expect(result.getTime()).toBe(expectedSunday.getTime());
+    });
+    
+    it('should return next Sunday if input is a Monday', () => {
+       
+        const monday = new Date('2024-09-16T10:00:00'); 
+
+       
+        const result = getNextSundayMidnight(monday);
+
+        const expectedSunday = new Date('2024-09-22T00:00:00');
+        expect(result.getTime()).toBe(expectedSunday.getTime());
     });
   });
 });

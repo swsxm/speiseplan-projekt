@@ -32,7 +32,7 @@ export async function GET(req, res) {
             {
                 $project: {
                     _id: 1,
-                    "user-id": 1,
+                    "userId": 1,
                     date: 1,
                     quantity: "$orderedMeals.quantity",
                     mealDate: "$orderedMeals.date",
