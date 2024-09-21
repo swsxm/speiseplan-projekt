@@ -173,14 +173,13 @@ describe('Validation and MongoDB Connection Tests', () => {
 
   describe('getNextSundayMidnight', () => {
     it('should return the correct next Sunday at midnight', () => {
-        // Arrange: Beispiel-Donnerstag
-        const thursday = new Date('2024-09-19T12:00:00'); // Donnerstag, 19. September 2024, 12:00 Uhr
 
-        // Act: Führe die Funktion aus
+        const thursday = new Date('2024-09-19T12:00:00'); 
+
+
         const result = getNextSundayMidnight(thursday);
 
-        // Assert: Überprüfe, dass das Ergebnis korrekt ist
-        const expectedSunday = new Date('2024-09-22T00:00:00'); // Sonntag, 22. September 2024, Mitternacht
+        const expectedSunday = new Date('2024-09-22T00:00:00'); 
         expect(result.getTime()).toBe(expectedSunday.getTime());
     });
     
