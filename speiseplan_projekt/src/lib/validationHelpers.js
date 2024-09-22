@@ -131,7 +131,9 @@ export function validateDate(date) {
     nextMonday.setDate(thursday.getDate() + (7 - thursday.getDay()) + 1); // Get next week's Monday
     nextMonday.setHours(0, 0, 0, 0); // Set to start of next Monday
 
-    const nextSundayMidnight = getNextSundayMidnight(nextMonday);
+    const nextSundayMidnight = new Date(nextMonday);
+    nextSundayMidnight.setDate(nextMonday.getDate() + 6); // Get the next Sunday's midnight
+    nextSundayMidnight.setHours(23, 59, 59, 999); // Set time to the end of Sunday
 
     if (inputDate >= nextMonday && inputDate <= nextSundayMidnight) {
         return true;
@@ -140,9 +142,9 @@ export function validateDate(date) {
     return false; 
 }
 
-export function getNextSundayMidnight(monday) {
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6); // Get the next Sunday's midnight
-    sunday.setHours(23, 59, 59, 999); // Set time to the end of Sunday
+export function getNextSundayMidnight(thursday) {
+    const sunday = new Date(thursday);
+    sunday.setDate(thursday.getDate() + (7 - thursday.getDay())); // Next Sunday
+    sunday.setHours(0, 0, 0, 0); // Set time to midnight
     return sunday;
-} 
+}
