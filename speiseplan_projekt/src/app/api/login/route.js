@@ -10,7 +10,7 @@ export async function POST(req) {
         const reqBody = await req.json();
         const { id, password } = reqBody;
         await connectMongoDB();
-        const user = await Users.findOne({ employee_id: id });
+        const user = await Users.findOne({ employeeId: id });
 
         if (!user) {
             return NextResponse.json(
@@ -28,7 +28,7 @@ export async function POST(req) {
         }
 
         const tokenData = {
-            id: user.employee_id,
+            id: user.employeeId,
             name: user.name,
             email: user.email,
             admin: user.admin
@@ -42,7 +42,7 @@ export async function POST(req) {
         );
         response.cookies.set("token", token, {httpOnly: true});
         response.cookies.set("name", user.name)
-        response.cookies.set("employeeID", user.employee_id)
+        response.cookies.set("employeeID", user.employeeId)
         console.log(user.name);
 
         

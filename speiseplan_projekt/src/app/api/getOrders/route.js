@@ -32,7 +32,7 @@ export async function POST(req) {
         const ordersWithMeals = await Order.aggregate([
             {
                 $match: {
-                    "user-id": payload.id
+                    "userId": payload.id
                 }
             },
             {

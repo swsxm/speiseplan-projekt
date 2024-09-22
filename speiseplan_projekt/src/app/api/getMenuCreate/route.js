@@ -22,11 +22,11 @@ export async function POST(req) {
 
         // Aggregation pipeline
         const pipeline = [
-            { $match: { "week-id": weekNumber, "day-number": dayOfWeek } },
+            { $match: { "weekId": weekNumber, "dayNumber": dayOfWeek } },
             { 
                 $lookup: {
                     from: "meals",
-                    localField: "meal-ids",
+                    localField: "mealIds",
                     foreignField: "_id",
                     as: "meals"
                 }

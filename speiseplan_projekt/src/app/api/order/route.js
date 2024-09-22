@@ -18,16 +18,16 @@ export async function POST(req) {
     await connectMongoDB();
 
     // Fetch all the plans for the next week
-    const plans = await Plan.find({ "week-id": nextWeek });
+    const plans = await Plan.find({ "weekId": nextWeek });
 
     if (!plans || plans.length === 0) {
       return NextResponse.json({ error: `No plans found for week ${nextWeek}` }, { status: 404 });
     }
 
-    // Group plans by day-number for easier access
+    // Group plans by dayNumber for easier access
     const plansByDay = {};
     plans.forEach(plan => {
-      plansByDay[plan['day-number']] = plan["meal-ids"].map(mealId => mealId.toString());
+      plansByDay[plan['dayNumber']] = plan["mealIds"].map(mealId => mealId.toString());
     });
 
     /**
@@ -61,7 +61,7 @@ export async function POST(req) {
 
     // If validation passes, proceed to create the order
     await Order.create({
-      "user-id": payload.id,
+      "userId": payload.id,
       "date": new Date(),
       "orderedMeals": ordered_meals_id.map(item => {
         const orderDate = new Date(item.date);

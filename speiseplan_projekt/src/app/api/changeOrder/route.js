@@ -36,7 +36,7 @@ export async function POST(req) {
          * Find all orders for the user and date
          */
         const orders = await Order.find({
-            "user-id": userId,
+            "userId": userId,
             "orderedMeals.date": targetDate
         });
 
