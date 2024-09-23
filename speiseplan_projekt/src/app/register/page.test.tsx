@@ -105,6 +105,6 @@ describe("RegisterForm Page", () => {
     await screen.findByRole("button", { name: /Register/i }); // Ensure the component is done processing
 
     // Ensure mockPush is called with the correct URL
-    expect(mockPush).toHaveBeenCalledWith("/");
+    expect(mockPush).toHaveBeenCalledWith("/login");
   });
 });

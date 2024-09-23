@@ -46,7 +46,7 @@ export default function RegisterForm() {
         if (form instanceof HTMLFormElement) {
           form.reset();
         }
-        router.push("/");
+        router.push("/login");
       } else {
         // Handle errors
         setError(result.error || "An error occurred");

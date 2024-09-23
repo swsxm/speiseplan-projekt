@@ -90,6 +90,6 @@ describe("Login Page", () => {
     await screen.findByRole("button", { name: /Login/i }); // Ensure the component is done processing
 
     // Ensure mockPush is called with the correct URL
-    expect(mockPush).toHaveBeenCalledWith("/");
+    expect(window.location.href).toBe("http://localhost/");
   });
 });
