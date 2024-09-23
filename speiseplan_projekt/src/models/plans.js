@@ -2,13 +2,13 @@ import mongoose, { Schema } from "mongoose";
 
 // Definiere das Schema für Pläne
 const planSchema = new Schema({
-    "week-id": {
+    "weekId": {
         type: Number,
     },
-    "day-number": {
+    "dayNumber": {
         type: Number,
     },
-    "meal-ids": [{
+    "mealIds": [{
         type: Schema.Types.ObjectId, 
         ref: 'Meal' 
     }]

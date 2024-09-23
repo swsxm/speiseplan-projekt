@@ -85,17 +85,17 @@ Die Tests für die LIB befinden sich im Ordner `src/lib/libTests`. Alle anderen 
 
 ```js
 /**
- * Multipliziert zwei Zahlen
+ * Explanation
  */
-function multiply(a, b) {
-    return a * b;
+function myFunction (p1, p2) {
+    return p1 * p2;
 }
 ```
 
 Wichtige Codezeilen sollten wie folgt kommentiert sein:
 
 ```js
-let result = square(crossProduct(3 % 2)); // Berechnet das Quadrat des Kreuzprodukts
+let result = square(crossProduct(3 % 2)); // Your explanation
 ```
 
 ### Branching Guidelines

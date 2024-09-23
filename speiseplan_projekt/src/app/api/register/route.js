@@ -84,12 +84,12 @@ export async function POST(req) {
         await connectMongoDB();
         console.log("Connecting was successful");
 
-        const user_exists = await Users.findOne({ employee_id: id }).select("_id");
+        const user_exists = await Users.findOne({ employeeId: id }).select("_id");
         if (user_exists) {
             return NextResponse.json({ error: "A user with this ID already exists." }, { status: 400 });
         }
 
-        await Users.create({ name, email, employee_id: id, password: hashedPassword, admin });
+        await Users.create({ name, email, employeeId: id, password: hashedPassword, admin });
         return NextResponse.json({ message: "User created successfully" }, { status: 201 });
     } catch (error) {
         console.error("Error in POST /api/register:", error);

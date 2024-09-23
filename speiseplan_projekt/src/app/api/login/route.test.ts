@@ -48,7 +48,7 @@ describe("POST /api/login", () => {
 
   it("should return status 400 if the password is invalid", async () => {
     // Simulating a found user with a hashed password
-    const mockUser = { employee_id: "test-id", password: "hashed-password" };
+    const mockUser = { employeeId: "test-id", password: "hashed-password" };
     (Users.findOne as jest.Mock).mockResolvedValue(mockUser);
     
     // Mocking bcrypt.compare to simulate an incorrect password
@@ -69,7 +69,7 @@ describe("POST /api/login", () => {
   it("should return status 201 and set cookies if login is successful", async () => {
     // Simulating a found user with all necessary data
     const mockUser = {
-      employee_id: "test-id",
+      employeeId: "test-id",
       password: "hashed-password",
       name: "Test User",
       email: "test@example.com",

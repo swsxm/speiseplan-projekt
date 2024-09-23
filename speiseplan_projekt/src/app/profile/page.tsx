@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-function profile() { 
+function Profile() { 
   
   const router = useRouter();
   const [name, setName] = useState('');
@@ -85,4 +85,4 @@ function profile() {
   );
 }
 
-export default profile;
+export default Profile;

@@ -105,9 +105,9 @@ export function showError(response) {
 }
 
 export function validateDate(date) {
-/**
- * Validates the date for changing orders
- */
+    /**
+     * Validates the date for changing orders
+     */
     const inputDate = new Date(date);
     
     // Check if the input date is in the past
@@ -116,25 +116,33 @@ export function validateDate(date) {
         return false;
     }
 
-    // Check if the input date is after Thursday 6pm of this week
-    const thursday = new Date();
-    thursday.setDate(thursday.getDate() + (4 - thursday.getDay())); // Get this week's Thursday
-    thursday.setHours(18, 0, 0, 0); // Set time to 6pm
+    // Calculate this week's Thursday 6 pm based on'now'
+    const thursday = new Date(now);
+    thursday.setDate(now.getDate() + (4 - now.getDay())); // Get this week's Thursday relative to 'now'
+    thursday.setHours(18, 0, 0, 0); // Set time to 6 pm
 
-    if (inputDate > thursday && inputDate <= getNextSundayMidnight(thursday)) {
+    // If it's currently past Thursday 6 pm, orders shouldn't be modifiable anymore this week
+    if (now > thursday) {
         return false;
     }
-    // Check if the date is in the current week
-    const currentWeekStart = new Date(now.setDate(now.getDate() - now.getDay() + 1)); // Get Monday of the current week
-    const currentWeekEnd = new Date(now.setDate(now.getDate() - now.getDay() + 7)); // Get Sunday of the current week
 
-    if (inputDate >= currentWeekStart && inputDate <= currentWeekEnd) {
-        return false;
+    // Check if the input date is within the next week (starting from next Monday to Sunday midnight)
+    const nextMonday = new Date(thursday);
+    nextMonday.setDate(thursday.getDate() + (7 - thursday.getDay()) + 1); // Get next week's Monday
+    nextMonday.setHours(0, 0, 0, 0); // Set to start of next Monday
+
+    const nextSundayMidnight = new Date(nextMonday);
+    nextSundayMidnight.setDate(nextMonday.getDate() + 6); // Get the next Sunday's midnight
+    nextSundayMidnight.setHours(23, 59, 59, 999); // Set time to the end of Sunday
+
+    if (inputDate >= nextMonday && inputDate <= nextSundayMidnight) {
+        return true;
     }
-    return true;
+
+    return false; 
 }
 
-function getNextSundayMidnight(thursday) {
+export function getNextSundayMidnight(thursday) {
     const sunday = new Date(thursday);
     sunday.setDate(thursday.getDate() + (7 - thursday.getDay())); // Next Sunday
     sunday.setHours(0, 0, 0, 0); // Set time to midnight

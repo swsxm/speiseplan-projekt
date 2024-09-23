@@ -17,13 +17,13 @@ export async function POST(req) {
         const dayNumber = date.getDay();
 
         // Find the plan for the given week and day
-        const plan = await Plan.findOne({ "week-id": weekNumber, "day-number": dayNumber }).populate('meal-ids').exec();
+        const plan = await Plan.findOne({ "weekId": weekNumber, "dayNumber": dayNumber }).populate('mealIds').exec();
         if (!plan) {
             return NextResponse.json({ message: "Plan not found" }, { status: 200 });
         }
 
         // Extract meal IDs from the plan and retrieve meal details
-        const mealIds = plan['meal-ids'];
+        const mealIds = plan['mealIds'];
         const mealPromises = mealIds.map(meal => Meal.findById(meal).exec());
         
         // Fetch all meal details

@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const orderSchema = new Schema({
-    "user-id": {
+    "userId": {
         type: Number,
         required: true,
     },

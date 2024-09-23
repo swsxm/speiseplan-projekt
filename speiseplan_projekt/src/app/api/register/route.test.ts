@@ -62,7 +62,7 @@ describe("POST /api/register", () => {
     bcrypt.hash.mockResolvedValue("hashed-password");
 
     (Users.findOne as jest.Mock).mockReturnValue({
-      select: jest.fn().mockResolvedValue({ _id: "existing-user-id" }) // Mocking select
+      select: jest.fn().mockResolvedValue({ _id: "existing-userId" }) // Mocking select
     });
 
     const req = {
@@ -116,7 +116,7 @@ describe("POST /api/register", () => {
     expect(Users.create).toHaveBeenCalledWith({
       name: "Test User",
       email: "test@example.com",
-      employee_id: "123456",
+      employeeId: "123456",
       password: "hashed-password",
       admin: false,
     });

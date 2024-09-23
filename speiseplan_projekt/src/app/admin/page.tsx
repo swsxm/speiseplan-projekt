@@ -14,7 +14,7 @@ interface Menu {
   totalPrice: number;
 }
 
-export default function admin() {
+export default function Admin() {
   const [currentPath, setCurrentPath] = useState('/');
   const [menuItems, setMenuItems] = useState<Menu[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -76,7 +76,7 @@ export default function admin() {
         <nav className="mx-auto p-4">
           <div className="flex flex-wrap items-center justify-center mx-auto p-4">
             <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1 rounded-lg border" id="navbar-sticky">
-              <ul className="flex flex-col md:p-2 mt-4 font-medium border rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white text-xl">
+              <ul className="flex flex-col md:p-2 mt-4 font-medium border rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white text-xl">
                 <li>
                   <CreateMealModal isOpen={isCreateMealModalOpen} onClose={closeCreateMealModal} />
                   <button onClick={openCreateMealModal}>

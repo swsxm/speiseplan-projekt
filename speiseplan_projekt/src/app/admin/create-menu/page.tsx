@@ -6,7 +6,7 @@ import CreateMealModal from '@/components/CreateMealModal';
 import { FaRegPlusSquare } from "react-icons/fa";
 import { startOfWeek, addDays, format } from 'date-fns';
 
-export default function speiseplan() {
+export default function Speiseplan() {
   const currentDate = new Date();
   const startOfCurrentWeek = startOfWeek(currentDate, { weekStartsOn: 1 });
   const startOfNewWeek = addDays(startOfCurrentWeek, 14);
@@ -181,13 +181,13 @@ export default function speiseplan() {
   }, [menuInDB]);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen">
       <Navbar />
 
       <nav className="mx-auto p-4">
         <div className="flex flex-wrap items-center justify-center mx-auto p-4">
           <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
-            <ul className="flex flex-col p-4 md:p-2 mt-4 font-medium border rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white text-xl">
+            <ul className="flex flex-col p-4 md:p-2 mt-4 font-medium border rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white text-xl">
               <li>
                 <CreateMealModal isOpen={isCreateMealModalOpen} onClose={closeCreateMealModal} />
                 <button onClick={openCreateMealModal}>Neues Gericht erstellen</button>
