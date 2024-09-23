@@ -38,7 +38,7 @@ export default function Login() {
       const data = await res.json();
 
       if (res.ok) {
-        router.replace("/");
+          window.location.href = "/";
       } else {
         setError(data.error || "Invalid Credentials");
       }
